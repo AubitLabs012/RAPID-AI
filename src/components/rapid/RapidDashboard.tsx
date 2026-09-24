@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Activity, ArrowDownRight, ArrowUpRight, Bell, Check, Crosshair, Database, Download, Globe2, History, Layers3, MapPin, Radio, Radar, Settings, ShieldCheck, SlidersHorizontal, Target, Waves, Wind, X, Zap, Sun, Moon } from 'lucide-react';
 import { IndiaGlobe } from './IndiaGlobe';
-import { RapidMap, type MapFocus } from './RapidMap';
+import { type MapFocus } from './RapidMap';
+import { RapidLibreMap } from './RapidLibreMap';
 import { LiveWeatherLine, LiveWeatherSection } from './LiveWeather';
 import { useLiveWeather } from '../../services/weather';
 import { regions, type Region } from './regions';
 import { HistoryPanel } from './HistoryPanel';
 import { CommandWeatherClock, CompactLiveStatus } from './CommandWeatherClock';
+import { RapidAssistant } from './RapidAssistant';
 import { useDashboardStore } from '../../store';
 import './rapid.css';
 import './rapid-day.css';
@@ -119,12 +121,13 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
     <aside className="rapid-sidebar">
       <div className="rapid-side-label">WORKSPACE <span>01 / IN</span></div>
       <nav aria-label="Primary">{navigation.map(({ name, title, subtitle, icon: Icon }) => <button key={name} className={activeNav === name ? 'active' : ''} onClick={() => navigate(name)} aria-current={activeNav === name ? 'page' : undefined}><Icon size={21} /><span><strong>{title}</strong><small>{subtitle}</small></span>{activeNav === name && <i />}</button>)}</nav>
+      <RapidAssistant selected={selected} />
     </aside>
 
     <main className="rapid-main">
       <div className="rapid-main-heading"><div><span className="rapid-eyebrow">{activeNav === 'History' ? 'ARCHIVE / NATIONAL HAZARD RECORD' : 'NATIONAL COMMAND CENTER'}</span><h1>{activeNav === 'History' ? 'Historical disasters' : activeNav === 'Live' ? 'Live monitoring' : 'Disaster intelligence'}<span> / INDIA</span></h1></div><span className="rapid-demo-tag"><span /> {activeNav === 'History' ? 'REPORT SOURCED' : 'SAMPLE DATA'}</span></div>
       {activeNav === 'History' ? <HistoryPanel /> : <div className={`rapid-center-stage ${mapFocus ? 'map-open' : ''}`}>
-        {mapFocus ? <RapidMap focus={mapFocus} selected={selected} onSelect={focusRegion} onClose={() => setMapFocus(null)} hazard={layer} onHazardChange={setLayer} markers={markers} onMarkersChange={setMarkers} reducedMotion={reducedMotion || systemMotion} /> : <>
+        {mapFocus ? <RapidLibreMap focus={mapFocus} selected={selected} onSelect={focusRegion} onClose={() => setMapFocus(null)} hazard={layer} onHazardChange={setLayer} markers={markers} onMarkersChange={setMarkers} reducedMotion={reducedMotion || systemMotion} /> : <>
         <div className="rapid-orbit-scene" aria-hidden="true"><div className="rapid-orbit orbit-outer" /><div className="rapid-orbit orbit-gold" /><div className="rapid-orbit orbit-ticks" /><div className="rapid-orbit orbit-inner" /><div className="rapid-orbit orbit-fine" /><span className="orbit-cross top" /><span className="orbit-cross bottom" /><span className="orbit-cross left" /><span className="orbit-cross right" /></div>
         <div className="rapid-globe-wrap"><IndiaGlobe hazard={layer} selected={selected.id} onOpenMap={focus => { if (focus.region) setSelected(focus.region); setMapFocus(focus); }} markers={markers} grid={grid} reducedMotion={reducedMotion || systemMotion} dayMode={colorMode === 'day'} /></div>
         <section className="rapid-floating rapid-view-menu"><h2><Globe2 size={13} /> INDIA VIEW</h2><small>REGIONAL INTELLIGENCE</small>{['All hazards', 'Cyclone', 'Flood', 'Earthquake', 'Heatwave', 'Landslide'].map(hazard => <button key={hazard} onClick={() => setLayer(hazard)} className={layer === hazard ? 'selected' : ''}><span className="rapid-radio" />{hazard}</button>)}</section>

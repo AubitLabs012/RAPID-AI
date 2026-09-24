@@ -1,0 +1,74 @@
+services:
+  db:
+    build:
+      context: .
+      dockerfile: backend/db/Dockerfile
+    environment:
+      POSTGRES_DB: rapid
+      POSTGRES_USER: rapid
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rapid-local-only}
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - rapid_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U rapid -d rapid]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 127.0.0.1:6379:6379
+    volumes:
+      - rapid_redis:/data
+  storage:
+    image: minio/minio:latest
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-rapidlocal}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-rapid-local-only}
+    ports:
+      - 127.0.0.1:9000:9000
+      - 127.0.0.1:9001:9001
+    volumes:
+      - rapid_objects:/data
+  storage-init:
+    image: minio/mc:latest
+    depends_on:
+      - storage
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-rapidlocal}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-rapid-local-only}
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      until mc alias set local http://storage:9000 "$${MINIO_ROOT_USER}" "$${MINIO_ROOT_PASSWORD}";
+      do sleep 2; done;
+      mc mb --ignore-existing local/rapid-evidence
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      storage-init:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql+psycopg://rapid:${POSTGRES_PASSWORD:-rapid-local-only}@db:5432/rapid
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT_URL: http://storage:9000
+      S3_BUCKET: rapid-evidence
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-rapidlocal}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-rapid-local-only}
+      SCHEDULER_ENABLED: "false"
+      ALLOWED_ORIGINS: http://localhost:4173,http://127.0.0.1:4173
+    ports:
+      - 127.0.0.1:8000:8000
+
+volumes:
+  rapid_postgres:
+  rapid_redis:
+  rapid_objects:

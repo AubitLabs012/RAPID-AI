@@ -1,33 +1,43 @@
-# RAPID-AI Prototype
+# RAPID-AI
 
-This project is now a high-fidelity RAPID-AI dashboard prototype for oceanographic, fisheries, and biodiversity monitoring.
+RAPID is a disaster-intelligence dashboard for India. The current frontend combines an interactive globe, a MapLibre disaster map, report-sourced historical events, live Open-Meteo weather, and a local assistant. Scenario risk scores and alert counts are illustrative; they are not live warnings or forecasts.
 
-It includes:
-
-- Dark command-center dashboard layout, with a **Day / Night mode** switch in the top bar (also in Settings). The choice is saved in the browser; the globe fades between a blue night tint and true-colour daylight
-- Sidebar navigation for live maps, ocean conditions, fisheries, biodiversity, predictions, alerts, assistant, uploads, and settings
-- KPI cards for sea surface temperature, chlorophyll, abundance, biodiversity, health score, and alerts
-- Leaflet marine explorer with zoom, pan, search, marker clustering, popups, coordinates, and layer controls
-- Marine layers for SST, chlorophyll, fisheries, biodiversity, coral reefs, and ocean currents
-- **Live weather** for each region from [Open-Meteo](https://open-meteo.com/) (free, no API key): current conditions on the Regional Analysis card, plus current readings and a 3-day forecast in the area analysis drawer. Refreshes on the Settings data-refresh interval (default 10 min). Code: `src/services/weather.ts`, `src/components/rapid/LiveWeather.tsx`
-- Dynamic marker loading from `src/marine-markers.json`, which can be replaced with a backend API endpoint
-- Analytics panels for fish prediction, biodiversity distribution, and ocean health
-- Alerts and AI assistant side panels
-- Species-in-focus cards with marine imagery
-
-## Run
-
-This is a Vite + React app:
+## Run the dashboard
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Then open `http://localhost:4173`.
+Open `http://localhost:4173/RAPID-AI/`. `npm run build` produces the static GitHub Pages site. GitHub Pages serves the frontend only; it cannot run the Python API, database, Redis, or object storage.
 
-## Notes
+## Assistant and analysis pipeline
 
-- The current deliverable is a static frontend prototype.
-- Dashboard data is sample UI data and can be connected to real APIs later.
-- The backend folder is still present from the previous project and can be repurposed for RAPID-AI APIs if needed.
+The floating robot below Settings opens an assistant that can answer from the sample regional scenarios and the three supplied historical disaster reports. It does not upload attachments or claim to run a model. `backend/app/api/routes/rapid_assistant.py` exposes `/api/assistant/capabilities` and a validated `/api/assistant/intake` contract. Intake returns `configuration_pending` until the data providers, vision-capable model, evidence storage, and incident processing are connected.
+
+The intended pipeline is: multi-source data → multimodal AI analysis → evidence verification → damage and risk assessment → geographic intelligence → incident clustering → priority engine → situation forecast → response recommendation → responder dashboard and alerts. The assistant panel shows these ten stages and their current status.
+
+## Stack
+
+| Layer | Current state |
+| --- | --- |
+| Frontend | React, TypeScript, Tailwind CSS |
+| Disaster map | MapLibre GL JS; satellite, normal, and illustrative risk layers |
+| API | Python, FastAPI; intake contract and existing backend services |
+| Weather | Open-Meteo frontend feed |
+| Vision/OCR/video | PyTorch, Ultralytics YOLO, Tesseract, OpenCV, FFmpeg installed/configured for later integration; no detector is running in the dashboard |
+| Spatial/ML | GeoPandas, Shapely, Rasterio, scikit-learn, XGBoost installed for later analysis |
+| Data services | PostgreSQL + PostGIS + pgvector, Redis, and S3-compatible MinIO defined in `compose.yaml` |
+| External feeds | Copernicus, Earthdata/GIBS, USGS, and NASA FIRMS are planned; no feed is represented as live until connected |
+
+## Local backend
+
+```bash
+cd backend
+python -m pip install -r requirements.txt
+python -m uvicorn app.main:app --reload
+```
+
+The API runs at `http://127.0.0.1:8000`. Copy `backend/.env.example` to `backend/.env` and fill in credentials when available. Do not commit `.env`. Docker users can run `docker compose up --build` from the repository root to start the API and local data services. Change the local-only default passwords before exposing any service outside a development machine.
+
+When the model/provider API details are supplied, connect the assistant to the deployed backend and enable each stage only after its evidence and source checks are implemented. Configure the deployed backend URL and allowed origin for the GitHub Pages frontend separately.
