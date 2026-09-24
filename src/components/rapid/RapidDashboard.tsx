@@ -9,6 +9,7 @@ import { HistoryPanel } from './HistoryPanel';
 import { useDashboardStore } from '../../store';
 import './rapid.css';
 import './rapid-day.css';
+import './history.css';
 import railIconsUrl from '../../assets/rapid-rail-icons.png';
 
 function Mark({ small = false }: { small?: boolean }) {
