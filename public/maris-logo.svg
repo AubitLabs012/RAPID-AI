@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="ocean" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#90e0ef"/>
+      <stop offset="0.45" stop-color="#00b4d8"/>
+      <stop offset="1" stop-color="#03045e"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="18" y1="12" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#caf0f8" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#ocean)"/>
+  <path d="M12 37c4.7 0 4.7-4 9.4-4s4.7 4 9.4 4 4.7-4 9.5-4 4.7 4 9.7 4" fill="none" stroke="#caf0f8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M12 46c4.7 0 4.7-4 9.4-4s4.7 4 9.4 4 4.7-4 9.5-4 4.7 4 9.7 4" fill="none" stroke="#ffffff" stroke-opacity="0.78" stroke-width="4" stroke-linecap="round"/>
+  <path d="M20 26V16h4l8 8 8-8h4v10h-5v-4.1l-7 7-7-7V26h-5Z" fill="url(#shine)"/>
+</svg>
