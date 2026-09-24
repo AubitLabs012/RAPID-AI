@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Activity, ArrowDownRight, ArrowUpRight, Bell, Check, Crosshair, Database, Download, Globe2, Layers3, MapPin, Radio, Radar, Settings, ShieldCheck, SlidersHorizontal, Target, Waves, Wind, X, Zap, Sun, Moon } from 'lucide-react';
 import { IndiaGlobe } from './IndiaGlobe';
+import { RapidMap, type MapFocus } from './RapidMap';
 import { LiveWeatherLine, LiveWeatherSection } from './LiveWeather';
 import { regions, type Region } from './regions';
 import { useDashboardStore } from '../../store';
@@ -50,7 +51,8 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
   const [analysisOpen, setAnalysisOpen] = useState(false);
   const [layer, setLayer] = useState('All hazards');
   const [markers, setMarkers] = useState(true);
-  const [grid, setGrid] = useState(true);
+  const [grid, setGrid] = useState(false);
+  const [mapFocus, setMapFocus] = useState<MapFocus | null>(null);
   const [clock, setClock] = useState(new Date());
   const [exported, setExported] = useState(false);
   const [systemMotion, setSystemMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -106,14 +108,16 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
 
     <main className="rapid-main">
       <div className="rapid-main-heading"><div><span className="rapid-eyebrow">NATIONAL COMMAND CENTER</span><h1>{activeNav === 'Live' ? 'Live monitoring' : 'Disaster intelligence'}<span> / INDIA</span></h1></div><span className="rapid-demo-tag"><span /> SAMPLE DATA</span></div>
-      <div className="rapid-center-stage">
+      <div className={`rapid-center-stage ${mapFocus ? 'map-open' : ''}`}>
+        {mapFocus ? <RapidMap focus={mapFocus} selected={selected} onSelect={selectRegion} onClose={() => setMapFocus(null)} hazard={layer} onHazardChange={setLayer} markers={markers} onMarkersChange={setMarkers} reducedMotion={reducedMotion || systemMotion} /> : <>
         <div className="rapid-orbit-scene" aria-hidden="true"><div className="rapid-orbit orbit-outer" /><div className="rapid-orbit orbit-gold" /><div className="rapid-orbit orbit-ticks" /><div className="rapid-orbit orbit-inner" /><div className="rapid-orbit orbit-fine" /><span className="orbit-cross top" /><span className="orbit-cross bottom" /><span className="orbit-cross left" /><span className="orbit-cross right" /></div>
-        <div className="rapid-globe-wrap"><IndiaGlobe hazard={layer} selected={selected.id} onSelect={selectRegion} markers={markers} grid={grid} reducedMotion={reducedMotion || systemMotion} dayMode={colorMode === 'day'} /></div>
+        <div className="rapid-globe-wrap"><IndiaGlobe hazard={layer} selected={selected.id} onOpenMap={focus => { if (focus.region) setSelected(focus.region); setMapFocus(focus); }} markers={markers} grid={grid} reducedMotion={reducedMotion || systemMotion} dayMode={colorMode === 'day'} /></div>
         <section className="rapid-floating rapid-view-menu"><h2><Globe2 size={13} /> INDIA VIEW</h2><small>REGIONAL INTELLIGENCE</small>{['All hazards', 'Cyclone', 'Flood', 'Earthquake', 'Heatwave', 'Landslide'].map(hazard => <button key={hazard} onClick={() => setLayer(hazard)} className={layer === hazard ? 'selected' : ''}><span className="rapid-radio" />{hazard}</button>)}</section>
         <section className="rapid-floating rapid-layer-menu"><h2><Layers3 size={13} /> SATELLITE LAYERS</h2><label><input type="checkbox" checked={markers} onChange={e => setMarkers(e.target.checked)} /> DISASTER MARKERS</label><label><input type="checkbox" checked={grid} onChange={e => setGrid(e.target.checked)} /> COORDINATE GRID</label><span className="rapid-layer-note">EARTH / OPTICAL BASEMAP</span></section>
         <div className="rapid-location-lock"><Crosshair size={16} /><span>FOCUS LOCK<strong>INDIAN SUBCONTINENT</strong></span></div>
         <div className="rapid-coordinate"><span>20°35′ N</span><i /><span>78°57′ E</span></div>
-        <div className="rapid-stage-label"><span className="rapid-status-dot" /> GEOSPATIAL EXPLORER <small>DRAG TO ROTATE · CLICK TO ANALYZE</small></div>
+        <div className="rapid-stage-label"><span className="rapid-status-dot" /> GEOSPATIAL EXPLORER <small>DRAG TO ROTATE · CLICK TO OPEN MAP</small></div>
+        </>}
       </div>
 
     </main>

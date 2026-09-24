@@ -12,7 +12,7 @@ import { Input } from "../ui/input";
 import earthTextureUrl from "../../assets/earth-atmos-2048.jpg";
 import cloudTextureUrl from "../../assets/earth-clouds-1024.png";
 
-type MapMode = "normal" | "satellite" | "risks";
+import { createBaseLayer, type MapMode } from "./mapLayers";
 
 type RiskZone = {
   id: string;
@@ -418,12 +418,7 @@ export function MarineMapbox() {
     if (!mapOpen || !map) return;
 
     baseLayerRef.current?.remove();
-    baseLayerRef.current = L.tileLayer(
-      mapMode === "satellite"
-        ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-        : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      { attribution: mapMode === "satellite" ? "Imagery (c) Esri" : "Map data (c) OpenStreetMap contributors" },
-    ).addTo(map);
+    baseLayerRef.current = createBaseLayer(mapMode).addTo(map);
 
     setSatelliteEnabled(mapMode === "satellite");
   }, [mapMode, mapOpen, setSatelliteEnabled]);
