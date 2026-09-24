@@ -219,3 +219,5 @@
 @media (max-width: 600px) {
   .rapid-top-status .rapid-mode-toggle button span { display: none; }
 }
+.rapid-shell.rapid-day { --rl: #151819; }
+.rapid-shell.rapid-day :is(.rapid-panel,.rapid-floating,.rapid-sidebar,.rapid-right-rail,.rapid-topbar,.rapid-side-clock,.rapid-coverage-mini,.rapid-settings,.rapid-rail-icons,.rapid-map-toolbar,.rapid-map-filters,.rapid-map-zoom,.rapid-detail-metrics>div,.rapid-history-event,.rapid-data-note) { border-color: #151819; border-width: 2px; }
