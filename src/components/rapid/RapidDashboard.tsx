@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Activity, ArrowDownRight, ArrowUpRight, Bell, Check, ChevronRight, Crosshair, Database, Download, Globe2, Layers3, MapPin, Radio, Radar, Search, Settings, ShieldCheck, SlidersHorizontal, Target, Waves, Wind, X, Zap, Sun, Moon } from 'lucide-react';
+import { Activity, ArrowDownRight, ArrowUpRight, Bell, Check, Crosshair, Database, Download, Globe2, Layers3, MapPin, Radio, Radar, Settings, ShieldCheck, SlidersHorizontal, Target, Waves, Wind, X, Zap, Sun, Moon } from 'lucide-react';
 import { IndiaGlobe } from './IndiaGlobe';
 import { LiveWeatherLine, LiveWeatherSection } from './LiveWeather';
-import { useLiveWeather } from '../../services/weather';
 import { regions, type Region } from './regions';
 import { useDashboardStore } from '../../store';
 import './rapid.css';
@@ -49,7 +48,6 @@ const navigation = [
 export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
   const [selected, setSelected] = useState(regions[0]);
   const [analysisOpen, setAnalysisOpen] = useState(false);
-  const [query, setQuery] = useState('');
   const [layer, setLayer] = useState('All hazards');
   const [markers, setMarkers] = useState(true);
   const [grid, setGrid] = useState(true);
@@ -61,11 +59,9 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
   const reducedMotion = useDashboardStore(s => s.reducedMotion);
   const setReducedMotion = useDashboardStore(s => s.setReducedMotion);
   const colorMode = useDashboardStore(s => s.colorMode);
-  const weather = useLiveWeather(selected.lat, selected.lng);
   const closeRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
-  const filtered = regions.filter(r => (layer === 'All hazards' || r.hazard === layer) && `${r.name} ${r.state} ${r.hazard}`.toLowerCase().includes(query.toLowerCase()));
 
   useEffect(() => { const timer = window.setInterval(() => setClock(new Date()), 1000); const media = window.matchMedia('(prefers-reduced-motion: reduce)'); const update = () => setSystemMotion(media.matches); media.addEventListener('change', update); return () => { clearInterval(timer); media.removeEventListener('change', update); }; }, []);
   useEffect(() => {
@@ -97,7 +93,6 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
     <div className="rapid-background-grid" aria-hidden="true" />
     <header className="rapid-topbar">
       <a href="#" className="rapid-brand" onClick={e => { e.preventDefault(); navigate('Home'); }}><Mark /><span><strong>RAPID<span>-</span>AI</strong><small>DISASTER INTELLIGENCE NETWORK</small></span></a>
-      <div className="rapid-motto">ONE NATION. <span>DEEPER INSIGHTS.</span></div>
       <div className="rapid-top-status"><span className="rapid-status-dot" /> INDIA OPERATIONS <span className="rapid-divider" /><ShieldCheck size={14} /><span>DEMO WORKSPACE</span><ModeToggle /><button className="rapid-avatar" onClick={onLogout} title="Return to login" aria-label="Return to login">R</button></div>
     </header>
 
@@ -105,10 +100,6 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
       <div className="rapid-side-label">WORKSPACE <span>01 / IN</span></div>
       <nav aria-label="Primary">{navigation.map(({ name, title, subtitle, icon: Icon }) => <button key={name} className={activeNav === name ? 'active' : ''} onClick={() => navigate(name)} aria-current={activeNav === name ? 'page' : undefined}><Icon size={21} /><span><strong>{title}</strong><small>{subtitle}</small></span>{activeNav === name && <i />}</button>)}</nav>
       <div className="rapid-sidebar-bottom">
-        <div className="rapid-coverage-mini"><RegionMap selected={selected} onSelect={selectRegion} /><span><i className="rapid-status-dot" /> INDIA COVERAGE</span></div>
-        <div className="rapid-system-stat"><MapPin /><span><strong>08</strong><small>Regional scenarios</small></span></div>
-        <div className="rapid-system-stat"><Layers3 /><span><strong>05</strong><small>Disaster categories</small></span></div>
-        <div className="rapid-system-stat"><Database /><span><strong>DEMO</strong><small>Illustrative dataset</small></span></div>
         <div className="rapid-side-clock"><strong>{clock.toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata' })}<small> IST</small></strong><span>{clock.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' }).toUpperCase()}</span></div>
       </div>
     </aside>
@@ -125,12 +116,6 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
         <div className="rapid-stage-label"><span className="rapid-status-dot" /> GEOSPATIAL EXPLORER <small>DRAG TO ROTATE · CLICK TO ANALYZE</small></div>
       </div>
 
-      <div className="rapid-bottom-panels">
-        <section className="rapid-panel rapid-regional"><header><h2><Crosshair size={13} /> REGIONAL SCAN</h2><span>08 LOCATIONS</span></header><label className="rapid-search"><Search size={13} /><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Find an Indian region..." aria-label="Search Indian regions" /></label><div className="rapid-region-list">{filtered.length ? filtered.map(region => <button key={region.id} onClick={() => selectRegion(region)} className={region.id === selected.id ? 'selected' : ''}><span className={`rapid-risk-dot ${region.level.toLowerCase()}`} /><span>{region.name}<small>{region.state}</small></span><em>{region.hazard}</em><ChevronRight size={12} /></button>) : <p className="rapid-empty">No regions match. Try another search or select All hazards.</p>}</div></section>
-        <div className="rapid-core"><div className="rapid-core-ring"><Mark /></div><strong>RAPID CORE</strong><span>REGIONAL INTELLIGENCE ENGINE</span><div className="rapid-core-bars" aria-hidden="true">{Array.from({ length: 23 }, (_, i) => <i key={i} style={{ animationDelay: `${i * .09}s` }} />)}</div><small>DEMONSTRATION MODE</small></div>
-        <section className="rapid-panel rapid-stream"><header><h2><Database size={13} /> DATA STREAM</h2><span>SCENARIO LOG</span></header><div className="rapid-stream-table"><div><time>SEQ 008</time><b>GEO</b><span>India region index loaded</span><Check /></div><div><time>SEQ 007</time><b>RISK</b><span>8 sample scenarios available</span><Check /></div><div><time>SEQ 006</time><b>MAP</b><span>Earth surface initialized</span><Check /></div><div><time>SEQ 005</time><b>AI</b><span>{selected.name} context selected</span><Check /></div><div><time>SEQ 004</time><b>WX</b><span>{weather.isSuccess ? `Live weather connected · ${selected.name}` : weather.isError ? 'Live weather unavailable' : 'Connecting to live weather'}</span>{weather.isSuccess ? <Check /> : <i className="rapid-amber-dot" />}</div></div><div className="rapid-stream-foot"><span className="rapid-status-dot" /> LOCAL SCENARIOS READY <span>v.01</span></div></section>
-      </div>
-      <footer className="rapid-main-footer"><span><ShieldCheck size={11} /> INDIA-FOCUSED DISASTER INTELLIGENCE</span><span>ILLUSTRATIVE SCENARIOS · NOT LIVE ALERTS</span></footer>
     </main>
 
     <aside className="rapid-right-rail" aria-label="Regional overview">
