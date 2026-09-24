@@ -16,9 +16,11 @@ function position(lat: number, lng: number, radius = 1) {
 
 function disasterColor(hazard: string) {
   if (hazard === 'Cyclone') return '#a66bff';
-  if (hazard === 'Flood' || hazard === 'Tsunami') return '#61d7ff';
+  if (hazard === 'Flood') return '#61d7ff';
+  if (hazard === 'Tsunami') return '#1976d2';
   if (hazard === 'Volcanic') return '#ff3946';
-  if (hazard === 'Earthquake' || hazard === 'Landslide') return '#a8754f';
+  if (hazard === 'Earthquake') return '#a8754f';
+  if (hazard === 'Landslide') return '#55d483';
   if (hazard === 'Heatwave') return '#ff9b45';
   return '#61d7ff';
 }
@@ -87,7 +89,32 @@ export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, 
       map: cloudTexture, transparent: true, opacity: 0.3, depthWrite: false, roughness: 1,
     }));
     earthGroup.add(clouds);
-    const markerTexture = new THREE.TextureLoader().load(markerUrl);
+    const markerTextures = new globalThis.Map<string, THREE.CanvasTexture>();
+    const markerTexture = new THREE.TextureLoader().load(markerUrl, source => {
+      // Tint the supplied glossy pin in-browser, retaining its highlights and silhouette.
+      const hazards = [...new Set(regions.map(region => region.hazard))];
+      for (const hazard of hazards) {
+        const canvas = document.createElement('canvas');
+        canvas.width = source.image.width; canvas.height = source.image.height;
+        const context = canvas.getContext('2d');
+        if (!context) continue;
+        context.drawImage(source.image, 0, 0);
+        context.globalCompositeOperation = 'source-atop';
+        context.globalAlpha = 0.86;
+        context.fillStyle = disasterColor(hazard);
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.globalCompositeOperation = 'screen';
+        context.globalAlpha = 0.62;
+        context.drawImage(source.image, 0, 0);
+        const tinted = new THREE.CanvasTexture(canvas);
+        tinted.colorSpace = THREE.SRGBColorSpace;
+        markerTextures.set(hazard, tinted);
+      }
+      for (const pin of pins) {
+        pin.dot.material.map = markerTextures.get(pin.region.hazard) ?? markerTexture;
+        pin.dot.material.needsUpdate = true;
+      }
+    });
     markerTexture.colorSpace = THREE.SRGBColorSpace;
     const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(1.018, 64, 48), new THREE.ShaderMaterial({
       transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
@@ -95,6 +122,15 @@ export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, 
       fragmentShader: 'varying vec3 n; varying vec3 v; void main(){float a=pow(1.0-max(dot(normalize(n),normalize(v)),0.0),3.0);gl_FragColor=vec4(0.24,0.51,0.95,a*0.28);}',
     }));
     earthGroup.add(atmosphere);
+    const glowCanvas = document.createElement('canvas');
+    glowCanvas.width = glowCanvas.height = 128;
+    const glowContext = glowCanvas.getContext('2d');
+    const glowGradient = glowContext?.createRadialGradient(64, 64, 2, 64, 64, 64);
+    glowGradient?.addColorStop(0, 'rgba(255,255,255,0.9)');
+    glowGradient?.addColorStop(0.24, 'rgba(255,255,255,0.48)');
+    glowGradient?.addColorStop(1, 'rgba(255,255,255,0)');
+    if (glowContext && glowGradient) { glowContext.fillStyle = glowGradient; glowContext.fillRect(0, 0, 128, 128); }
+    const glowTexture = new THREE.CanvasTexture(glowCanvas);
     const gridGroup = new THREE.Group();
     const lineMaterial = new THREE.LineBasicMaterial({ color: '#39c6d6', transparent: true, opacity: 0.12 });
     for (let lat = -60; lat <= 60; lat += 20) {
@@ -108,13 +144,16 @@ export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, 
     const pins = regions.map(region => {
       const point = position(region.lat, region.lng, 1.014);
       const color = disasterColor(region.hazard);
-      const dot = new THREE.Sprite(new THREE.SpriteMaterial({ map: markerTexture, color, transparent: true, depthWrite: false }));
+      const dot = new THREE.Sprite(new THREE.SpriteMaterial({ map: markerTextures.get(region.hazard) ?? markerTexture, transparent: true, depthWrite: false }));
       dot.scale.setScalar(0.1);
       dot.position.copy(point); dot.userData.region = region;
+      const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture, color, transparent: true, opacity: 0.58, blending: THREE.AdditiveBlending, depthWrite: false }));
+      glow.scale.setScalar(0.23);
+      glow.position.copy(point.clone().multiplyScalar(1.002));
       const ring = new THREE.Mesh(new THREE.RingGeometry(0.024, 0.028, 40), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }));
       ring.position.copy(point.clone().multiplyScalar(1.003)); ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), point.clone().normalize());
-      pinGroup.add(dot, ring);
-      return { dot, ring, region };
+      pinGroup.add(glow, dot, ring);
+      return { dot, glow, ring, region };
     });
     earthGroup.add(pinGroup);
     const raycaster = new THREE.Raycaster();
@@ -178,13 +217,15 @@ export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, 
         pin.dot.visible = pin.ring.visible = state.current.hazard === 'All hazards' || pin.region.hazard === state.current.hazard;
         const active = pin.region.id === state.current.selected;
         pin.dot.scale.setScalar(active ? 0.14 : 0.1);
+        pin.glow.material.opacity = active ? 0.82 : 0.55;
+        pin.glow.scale.setScalar(active ? 0.3 : 0.23);
         pin.ring.scale.setScalar(state.current.reducedMotion ? (active ? 1.7 : 1) : 1 + ((time / 2200 + regions.indexOf(pin.region) / 8) % 1) * (active ? 1.5 : 0.9));
       }
       controls.update(); renderer.render(scene, camera); frame = requestAnimationFrame(draw);
     };
     frame = requestAnimationFrame(draw);
     return () => {
-      cancelAnimationFrame(frame); resize.disconnect(); controls.dispose(); texture.dispose(); cloudTexture.dispose(); markerTexture.dispose();
+      cancelAnimationFrame(frame); resize.disconnect(); controls.dispose(); texture.dispose(); cloudTexture.dispose(); markerTexture.dispose(); glowTexture.dispose(); markerTextures.forEach(item => item.dispose());
       renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointerup', up);
       renderer.domElement.removeEventListener('pointermove', move); renderer.domElement.removeEventListener('pointercancel', cancel);
       scene.traverse(object => { if (object instanceof THREE.Mesh || object instanceof THREE.Line) { object.geometry.dispose(); const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(material => material.dispose()); } else if (object instanceof THREE.Sprite) { object.material.dispose(); } });

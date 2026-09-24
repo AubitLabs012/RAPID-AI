@@ -24,9 +24,9 @@
 .rapid-map-legend i{width:7px;height:7px;border-radius:50%;background:#edb85e}
 .rapid-map-legend i.high{background:#ff5968}
 .rapid-leaflet-pin{background:none;border:0}
-.rapid-leaflet-pin>span{position:absolute;left:0;top:0;width:42px;height:46px;background:var(--marker-image) center / contain no-repeat;filter:var(--pin-filter) drop-shadow(0 3px 5px #000b);transform-origin:50% 90%}
+.rapid-leaflet-pin>span{position:absolute;left:0;top:0;width:42px;height:46px;background:var(--marker-image) center / contain no-repeat;filter:var(--pin-filter) drop-shadow(0 0 3px var(--pin-color)) drop-shadow(0 0 8px color-mix(in srgb,var(--pin-color) 72%,transparent)) drop-shadow(0 3px 5px #000b);transform-origin:50% 90%;transition:transform .22s ease,filter .22s ease}
 .rapid-leaflet-pin i{position:absolute;left:16px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--pin-color);box-shadow:0 0 8px var(--pin-color)}
-.rapid-leaflet-pin .selected{transform:scale(1.18);filter:var(--pin-filter) drop-shadow(0 0 7px var(--pin-color))}
+.rapid-leaflet-pin .selected{transform:scale(1.18);filter:var(--pin-filter) drop-shadow(0 0 5px var(--pin-color)) drop-shadow(0 0 13px var(--pin-color))}
 .rapid-map-error{position:absolute;bottom:28px;left:12px;right:66px;z-index:3;padding:12px;background:#332411f5;border:1px solid #bd944e;color:#ffe0a8;font-size:11px}
 .rapid-map-error button{text-decoration:underline;padding:3px 8px;color:#fff}
 .rapid-day .rapid-map-toolbar,.rapid-day .rapid-map-filters{background:#e5f0f0;color:#16353b}

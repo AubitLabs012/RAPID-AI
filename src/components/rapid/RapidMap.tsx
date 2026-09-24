@@ -10,17 +10,17 @@ export type MapFocus = { lat: number; lng: number; region?: Region };
 const modes = [{ id: 'satellite', label: 'Satellite', icon: Satellite }, { id: 'normal', label: 'Normal', icon: Map }, { id: 'risks', label: 'Risk', icon: Radar }] as const;
 
 const disasterPalette: Record<string, { color: string; filter: string }> = {
-  Cyclone: { color: '#a66bff', filter: 'hue-rotate(235deg) saturate(1.35)' },
-  Flood: { color: '#61d7ff', filter: 'hue-rotate(155deg) saturate(1.25)' },
-  Tsunami: { color: '#1976d2', filter: 'hue-rotate(175deg) saturate(1.4)' },
+  Cyclone: { color: '#a66bff', filter: 'hue-rotate(235deg) saturate(1.45)' },
+  Flood: { color: '#61d7ff', filter: 'hue-rotate(150deg) saturate(1.45)' },
+  Tsunami: { color: '#1976d2', filter: 'hue-rotate(195deg) saturate(1.5)' },
   Volcanic: { color: '#ff3946', filter: 'none' },
-  Earthquake: { color: '#a8754f', filter: 'hue-rotate(325deg) saturate(.75)' },
-  Heatwave: { color: '#ff9b45', filter: 'hue-rotate(15deg) saturate(1.2)' },
-  Landslide: { color: '#a8754f', filter: 'hue-rotate(325deg) saturate(.75)' },
+  Earthquake: { color: '#a8754f', filter: 'sepia(.72) saturate(1.15) hue-rotate(340deg) brightness(.82)' },
+  Heatwave: { color: '#ff9b45', filter: 'hue-rotate(15deg) saturate(1.4)' },
+  Landslide: { color: '#55d483', filter: 'hue-rotate(95deg) saturate(1.4)' },
 };
 
 function disasterStyle(hazard: string) {
-  return disasterPalette[hazard] ?? { color: '#61d7ff', filter: 'hue-rotate(155deg) saturate(1.25)' };
+  return disasterPalette[hazard] ?? { color: '#61d7ff', filter: 'hue-rotate(150deg) saturate(1.45)' };
 }
 
 export function RapidMap({ focus, selected, onSelect, onClose, hazard, onHazardChange, markers, onMarkersChange, reducedMotion }: {
