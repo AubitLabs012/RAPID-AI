@@ -24,9 +24,9 @@
 .rapid-map-legend i{width:7px;height:7px;border-radius:50%;background:#edb85e}
 .rapid-map-legend i.high{background:#ff5968}
 .rapid-leaflet-pin{background:none;border:0}
-.rapid-leaflet-pin>span{position:absolute;left:4px;top:2px;width:24px;height:24px;transform:rotate(-45deg);border-radius:50% 50% 50% 0;background:var(--pin-color);border:2px solid #fff;box-shadow:0 3px 9px #0008}
-.rapid-leaflet-pin i{position:absolute;inset:6px;background:#1b2532;border-radius:50%}
-.rapid-leaflet-pin .selected{box-shadow:0 0 0 5px #ffffff55,0 3px 10px #0008}
+.rapid-leaflet-pin>span{position:absolute;left:0;top:0;width:42px;height:46px;background:var(--marker-image) center / contain no-repeat;filter:var(--pin-filter) drop-shadow(0 3px 5px #000b);transform-origin:50% 90%}
+.rapid-leaflet-pin i{position:absolute;left:16px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--pin-color);box-shadow:0 0 8px var(--pin-color)}
+.rapid-leaflet-pin .selected{transform:scale(1.18);filter:var(--pin-filter) drop-shadow(0 0 7px var(--pin-color))}
 .rapid-map-error{position:absolute;bottom:28px;left:12px;right:66px;z-index:3;padding:12px;background:#332411f5;border:1px solid #bd944e;color:#ffe0a8;font-size:11px}
 .rapid-map-error button{text-decoration:underline;padding:3px 8px;color:#fff}
 .rapid-day .rapid-map-toolbar,.rapid-day .rapid-map-filters{background:#e5f0f0;color:#16353b}
@@ -39,3 +39,4 @@
 @media(max-width:600px){.rapid-map-toolbar{padding:8px;gap:5px}.rapid-shell .rapid-map-toolbar button{padding:7px;font-size:10px;gap:4px}.rapid-map-filters{padding:8px;gap:8px;font-size:10px}.rapid-map-filters>span{margin:0;width:100%;font-size:8px}.rapid-center-stage.map-open{margin:12px 0;height:540px;min-height:540px}.rapid-map-legend{gap:7px;padding:7px;font-size:9px;bottom:44px}.rapid-map-legend strong{font-size:6px;letter-spacing:0}.rapid-map-zoom{right:8px;bottom:85px}.rapid-map-zoom button{width:36px;height:36px}}
 
 .rapid-globe-tools output{display:grid;place-items:center;min-width:38px;padding:0 5px;font:10px monospace;color:inherit}
+.rapid-disaster-legend{position:absolute;left:12px;bottom:12px;z-index:2;display:flex;flex-wrap:wrap;gap:7px 12px;padding:8px 10px;background:#07171ded;border:1px solid var(--rl);font:8px monospace;letter-spacing:.2px;color:#c6dfe1}.rapid-disaster-legend span{display:flex;align-items:center;gap:5px}.rapid-disaster-legend i{width:8px;height:8px;border-radius:50%;background:#a66bff}.rapid-disaster-legend i.flood{background:#61d7ff}.rapid-disaster-legend i.volcanic{background:#ff3946}.rapid-disaster-legend i.earthquake{background:#a8754f}.rapid-day .rapid-disaster-legend{background:#edf7f7;color:#21444b}

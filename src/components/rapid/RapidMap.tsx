@@ -4,9 +4,24 @@ import { Crosshair, Globe2, Map, Minus, Plus, Radar, Satellite } from 'lucide-re
 import { createBaseLayer, type MapMode } from '../map/mapLayers';
 import { regions, type Region } from './regions';
 import './rapid-map.css';
+import markerUrl from '../../assets/rapid-marker.png';
 
 export type MapFocus = { lat: number; lng: number; region?: Region };
 const modes = [{ id: 'satellite', label: 'Satellite', icon: Satellite }, { id: 'normal', label: 'Normal', icon: Map }, { id: 'risks', label: 'Risk', icon: Radar }] as const;
+
+const disasterPalette: Record<string, { color: string; filter: string }> = {
+  Cyclone: { color: '#a66bff', filter: 'hue-rotate(235deg) saturate(1.35)' },
+  Flood: { color: '#61d7ff', filter: 'hue-rotate(155deg) saturate(1.25)' },
+  Tsunami: { color: '#1976d2', filter: 'hue-rotate(175deg) saturate(1.4)' },
+  Volcanic: { color: '#ff3946', filter: 'none' },
+  Earthquake: { color: '#a8754f', filter: 'hue-rotate(325deg) saturate(.75)' },
+  Heatwave: { color: '#ff9b45', filter: 'hue-rotate(15deg) saturate(1.2)' },
+  Landslide: { color: '#a8754f', filter: 'hue-rotate(325deg) saturate(.75)' },
+};
+
+function disasterStyle(hazard: string) {
+  return disasterPalette[hazard] ?? { color: '#61d7ff', filter: 'hue-rotate(155deg) saturate(1.25)' };
+}
 
 export function RapidMap({ focus, selected, onSelect, onClose, hazard, onHazardChange, markers, onMarkersChange, reducedMotion }: {
   focus: MapFocus; selected: Region; onSelect: (region: Region) => void; onClose: () => void;
@@ -53,7 +68,7 @@ export function RapidMap({ focus, selected, onSelect, onClose, hazard, onHazardC
     const layer = L.layerGroup().addTo(map);
     const visible = regions.filter(region => hazard === 'All hazards' || region.hazard === hazard);
     for (const region of visible) {
-      const color = region.level === 'High' ? '#ff5968' : '#edb85e';
+      const { color, filter } = disasterStyle(region.hazard);
       // Reuse MARIS's translucent risk-area treatment with RAPID's sample regions.
       if (mode === 'risks') L.circle([region.lat, region.lng], {
         radius: region.level === 'High' ? 100000 : 65000, color, fillColor: color,
@@ -61,8 +76,8 @@ export function RapidMap({ focus, selected, onSelect, onClose, hazard, onHazardC
       }).addTo(layer);
       if (!markers && mode !== 'risks') continue;
       const label = `${region.name}: ${region.hazard}, ${region.level} sample risk`;
-      const icon = L.divIcon({ className: 'rapid-leaflet-pin', iconSize: [30, 38], iconAnchor: [15, 34],
-        html: `<span class="${region.id === selected.id ? 'selected' : ''}" style="--pin-color:${color}"><i></i></span>` });
+      const icon = L.divIcon({ className: 'rapid-leaflet-pin', iconSize: [42, 46], iconAnchor: [21, 44],
+        html: `<span class="${region.id === selected.id ? 'selected' : ''}" style="--pin-color:${color};--pin-filter:${filter};--marker-image:url(${markerUrl})"><i></i></span>` });
       const tooltip = document.createElement('span');
       tooltip.textContent = `${region.name} · ${region.hazard} · ${region.level}`;
       L.marker([region.lat, region.lng], { icon, title: label, alt: label, keyboard: true, riseOnHover: true })
@@ -92,6 +107,7 @@ export function RapidMap({ focus, selected, onSelect, onClose, hazard, onHazardC
       {mode !== 'risks' && <label><input type="checkbox" checked={markers} onChange={event => onMarkersChange(event.target.checked)} /> Markers</label>}
       <span>{mode === 'risks' ? 'Sample risk areas · not forecast boundaries' : 'Select a marker to analyze'}</span>
     </div>
+    <div className="rapid-disaster-legend" aria-label="Disaster marker colors"><span><i className="cyclone" /> Cyclone</span><span><i className="flood" /> Flood / Tsunami</span><span><i className="volcanic" /> Volcanic</span><span><i className="earthquake" /> Earthquake</span></div>
     <div className="rapid-map-surface" ref={host} aria-label={`${mode === 'risks' ? 'Risk' : mode} map`} />
     <div className="rapid-map-zoom" role="group" aria-label="Map navigation">
       <button aria-label="Zoom in map" disabled={zoom >= 19} onClick={() => mapRef.current?.zoomIn()}><Plus size={18} /></button>

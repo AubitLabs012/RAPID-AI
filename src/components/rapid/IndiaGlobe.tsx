@@ -13,6 +13,15 @@ function position(lat: number, lng: number, radius = 1) {
   return new THREE.Vector3(-radius * Math.sin(phi) * Math.cos(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.sin(theta));
 }
 
+function disasterColor(hazard: string) {
+  if (hazard === 'Cyclone') return '#a66bff';
+  if (hazard === 'Flood' || hazard === 'Tsunami') return '#61d7ff';
+  if (hazard === 'Volcanic') return '#ff3946';
+  if (hazard === 'Earthquake' || hazard === 'Landslide') return '#a8754f';
+  if (hazard === 'Heatwave') return '#ff9b45';
+  return '#61d7ff';
+}
+
 export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, hazard, dayMode = false }: { selected: string; onOpenMap: (focus: MapFocus) => void; markers: boolean; grid: boolean; reducedMotion: boolean; hazard: string; dayMode?: boolean }) {
   const mount = useRef<HTMLDivElement>(null);
   const openMap = useRef(onOpenMap);
@@ -95,7 +104,7 @@ export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, 
     const pinGroup = new THREE.Group();
     const pins = regions.map(region => {
       const point = position(region.lat, region.lng, 1.014);
-      const color = region.level === 'High' ? '#ff5968' : '#edb85e';
+      const color = disasterColor(region.hazard);
       const dot = new THREE.Mesh(new THREE.SphereGeometry(0.013, 16, 12), new THREE.MeshBasicMaterial({ color }));
       dot.position.copy(point); dot.userData.region = region;
       const ring = new THREE.Mesh(new THREE.RingGeometry(0.024, 0.028, 40), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }));
