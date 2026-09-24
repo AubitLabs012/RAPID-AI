@@ -40,4 +40,6 @@ python -m uvicorn app.main:app --reload
 
 The API runs at `http://127.0.0.1:8000`. Copy `backend/.env.example` to `backend/.env` and fill in credentials when available. Do not commit `.env`. Docker users can run `docker compose up --build` from the repository root to start the API and local data services. Change the local-only default passwords before exposing any service outside a development machine.
 
+On Windows, Docker Desktop needs its Linux backend. If WSL is missing, run `wsl --install` from an Administrator terminal, restart Windows, and then open Docker Desktop before running Compose.
+
 When the model/provider API details are supplied, connect the assistant to the deployed backend and enable each stage only after its evidence and source checks are implemented. Configure the deployed backend URL and allowed origin for the GitHub Pages frontend separately.
