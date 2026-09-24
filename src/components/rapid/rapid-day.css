@@ -1,0 +1,221 @@
+/*
+  Day mode for the RAPID-AI command center.
+  rapid.css is the night (default) look. Everything here only applies when the shell
+  has the .rapid-day class, so night mode is untouched.
+*/
+
+.rapid-shell {
+  transition: background-color .35s ease, color .35s ease;
+}
+
+.rapid-shell.rapid-day {
+  --rc: #0b7d84;
+  --rg: #a8742a;
+  --rm: #5d777b;
+  --rl: rgba(16, 112, 120, .24);
+  color: #10292e;
+  background: #eaf1f2;
+}
+
+.rapid-day .rapid-background-grid {
+  background-image: linear-gradient(#0f6f7812 1px, transparent 1px), linear-gradient(90deg, #0f6f7812 1px, transparent 1px);
+}
+
+.rapid-day button:hover { color: #075d63; }
+.rapid-day .rapid-mark { filter: none; }
+
+/* Top bar */
+.rapid-day .rapid-brand strong { color: #0f2a2f; }
+.rapid-day .rapid-motto { color: #264449; }
+.rapid-day .rapid-motto span,
+.rapid-day .rapid-top-status { color: #5d777b; }
+.rapid-day .rapid-status-dot { background: #13a57a; box-shadow: 0 0 5px #13a57a55; }
+.rapid-day .rapid-avatar { background: #ffffff !important; }
+
+/* Sidebar */
+.rapid-day .rapid-sidebar { background: #f4f8f8; }
+.rapid-day .rapid-side-label { color: #5d777b; }
+.rapid-day .rapid-side-label span { color: #7d9497; }
+.rapid-day .rapid-sidebar nav button svg { color: #47666b; }
+.rapid-day .rapid-sidebar nav button strong { color: #1d3a3f; }
+.rapid-day .rapid-sidebar nav button small { color: #647e82; }
+.rapid-day .rapid-sidebar nav button.active { background: linear-gradient(90deg, #0b7d841c, transparent); box-shadow: none; }
+.rapid-day .rapid-sidebar nav button.active strong,
+.rapid-day .rapid-sidebar nav button.active svg { color: var(--rc); }
+.rapid-day .rapid-coverage-mini,
+.rapid-day .rapid-side-clock { background: #ffffffcc; }
+.rapid-day .rapid-coverage-mini > span,
+.rapid-day .rapid-system-stat > svg { color: #47666b; }
+.rapid-day .rapid-system-stat strong,
+.rapid-day .rapid-side-clock strong { color: #10292e; }
+.rapid-day .rapid-system-stat small,
+.rapid-day .rapid-side-clock > span,
+.rapid-day .rapid-side-clock strong small { color: #647e82; }
+
+/* Heading + stage */
+.rapid-day .rapid-eyebrow,
+.rapid-day .rapid-main-heading h1 > span { color: #5d777b; }
+.rapid-day .rapid-demo-tag { color: #8a5a14; border-color: #a8742a66; background: #a8742a10; }
+.rapid-day .rapid-demo-tag > span { background: #8a5a14; }
+.rapid-day .rapid-orbit-scene { filter: none; }
+.rapid-day .orbit-outer { border-color: #a8742a55; box-shadow: 0 0 0 7px #a8742a08, 0 0 0 9px #a8742a22; }
+.rapid-day .orbit-gold { border-color: #a8742a99; box-shadow: none; }
+.rapid-day .orbit-ticks { background: repeating-conic-gradient(from 0deg, #a8742a99 0deg .18deg, transparent .18deg 2deg); }
+.rapid-day .orbit-inner { border-color: #0b7d8466; box-shadow: 0 0 0 4px #0b7d840c; }
+.rapid-day .orbit-fine { border-color: #0b7d8444; }
+.rapid-day .orbit-cross { box-shadow: none; }
+
+.rapid-day .rapid-floating {
+  background: linear-gradient(110deg, #ffffffee, #ffffffc4);
+  box-shadow: 0 8px 24px #0f2a2f14;
+}
+.rapid-day .rapid-floating h2 { color: #0f4449; }
+.rapid-day .rapid-view-menu > small,
+.rapid-day .rapid-layer-note { color: #647e82; }
+.rapid-day .rapid-view-menu button,
+.rapid-day .rapid-layer-menu label { color: #33555a; }
+.rapid-day .rapid-view-menu button.selected { color: var(--rc); }
+.rapid-day .rapid-radio { border-color: #7d9a9e; }
+.rapid-day .rapid-view-menu button.selected .rapid-radio { box-shadow: none; }
+.rapid-day.rapid-shell input[type=checkbox] { accent-color: #0b7d84; }
+.rapid-day .rapid-location-lock { background: #ffffffb3; }
+.rapid-day .rapid-location-lock strong { color: #33555a; }
+/* The coordinates can overlap the globe edge, so give the dark text a light halo. */
+.rapid-day .rapid-coordinate { color: #3c5a5f; text-shadow: 0 0 4px #eaf1f2, 0 0 8px #eaf1f2; }
+.rapid-day .rapid-coordinate i { background: #7d9a9e; }
+/* The stage label sits on the (dark) globe itself, so it keeps light text in day mode too. */
+.rapid-day .rapid-stage-label { color: #e4f6f7; text-shadow: 0 1px 3px #03161acc; }
+.rapid-day .rapid-stage-label small { color: #b9dadd; }
+.rapid-day .rapid-globe-notice { color: #4f6d72; }
+.rapid-day .rapid-globe-tools { background: #ffffffe6; }
+.rapid-day .rapid-globe-tools button:hover { background: #0b7d8418; }
+.rapid-day .rapid-globe-fallback { background: #ffffff; }
+
+/* Panels */
+.rapid-day .rapid-panel {
+  background: linear-gradient(120deg, #ffffffee, #f6fafaf5);
+  box-shadow: 0 8px 24px #0f2a2f10;
+}
+.rapid-day .rapid-panel:before,
+.rapid-day .rapid-panel:after { border-color: #0b7d84; }
+.rapid-day .rapid-panel > header { border-bottom-color: #0f6f7822; }
+.rapid-day .rapid-panel > header h2 { color: #0f4449; }
+.rapid-day .rapid-panel > header > span,
+.rapid-day .rapid-panel > header > svg { color: #5d777b; }
+.rapid-day .rapid-search { border-bottom-color: #0f6f7822; color: #5d777b; }
+.rapid-day .rapid-search input { color: #10292e; }
+.rapid-day .rapid-search input::placeholder { color: #7d9497; }
+.rapid-day .rapid-region-list { scrollbar-color: #a9c4c7 transparent; }
+.rapid-day .rapid-region-list > button { border-bottom-color: #0f6f7814; }
+.rapid-day .rapid-region-list > button.selected { background: #0b7d8414; }
+.rapid-day .rapid-region-list small { color: #647e82; }
+.rapid-day .rapid-region-list em { color: #33555a; }
+.rapid-day .rapid-empty { color: #4f6d72; }
+.rapid-day .rapid-risk-dot { background: #c07a10; box-shadow: none; }
+.rapid-day .rapid-risk-dot.high { background: #d0314a; box-shadow: none; }
+
+.rapid-day .rapid-core-ring { background: #ffffff; box-shadow: 0 0 0 5px #0b7d8412, 0 0 0 7px #0b7d8426; }
+.rapid-day .rapid-core-ring:before { border-color: #0b7d8499; }
+.rapid-day .rapid-core > strong { color: #0f2a2f; }
+.rapid-day .rapid-core > span { color: #5d777b; }
+.rapid-day .rapid-core > small { color: #8a6a2a; }
+.rapid-day .rapid-core-bars i { background: #0b7d84; box-shadow: none; }
+
+.rapid-day .rapid-stream-table > div { color: #264449; }
+.rapid-day .rapid-stream-table time { color: #7d9497; }
+.rapid-day .rapid-stream-table b { color: #0b6d73; }
+.rapid-day .rapid-stream-table svg { color: #13a57a; }
+.rapid-day .rapid-amber-dot { background: #c07a10; }
+.rapid-day .rapid-stream-foot { border-top-color: #0f6f7822; color: #5d777b; }
+.rapid-day .rapid-main-footer,
+.rapid-day .rapid-rail-footer { color: #5d777b; }
+
+/* Right rail */
+.rapid-day .rapid-observation {
+  background: radial-gradient(ellipse at center, #0b7d8414, transparent 70%), linear-gradient(140deg, #f4f9f9, #e3eeef);
+}
+.rapid-day .rapid-observation-caption { background: linear-gradient(transparent, #eef5f5 70%); }
+.rapid-day .rapid-observation-caption > span:first-child,
+.rapid-day .rapid-observation-caption small { color: #4f6d72; }
+.rapid-day .rapid-observation-caption strong { color: #0f2a2f; }
+.rapid-day .rapid-outline-tag { color: #2f7a5c; border-color: #2f7a5c55; }
+.rapid-day .rapid-crosshair-corner { border-color: #0b7d84; }
+.rapid-day .rapid-panel-link { color: #0b6d73 !important; border-top-color: #0f6f7822 !important; }
+.rapid-day .rapid-panel-link:hover { background: #0b7d8410; }
+
+/* Schematic India map (SVG attributes are overridden by these CSS properties) */
+.rapid-day .rapid-region-map > path:nth-of-type(1) { fill: #0b7d841f; stroke: #0b7d84; }
+.rapid-day .rapid-region-map > path:nth-of-type(2) { stroke: #0b7d8466; }
+.rapid-day .rapid-region-map text { fill: #5d777b; }
+.rapid-day .rapid-region-map pattern path { stroke: #0b7d84; }
+
+.rapid-day .rapid-analysis-title small,
+.rapid-day .rapid-score > span,
+.rapid-day .rapid-card-metrics > span,
+.rapid-day .rapid-card-metrics small { color: #5d777b; }
+.rapid-day .rapid-score > strong,
+.rapid-day .rapid-card-metrics strong,
+.rapid-day .rapid-threat-totals strong { color: #0f2a2f; }
+.rapid-day .rapid-score > strong small { color: #7d9497; }
+.rapid-day .rapid-score > svg { color: #a8742a; }
+.rapid-day .rapid-spark { color: #0b7d84; }
+.rapid-day .rapid-severity { color: #8a5a0c; border-color: #c07a1066; background: #c07a1012; }
+.rapid-day .rapid-severity.high { color: #b8243d; border-color: #d0314a66; background: #d0314a10; }
+.rapid-day .rapid-threat-totals > span,
+.rapid-day .rapid-threat-row small,
+.rapid-day .rapid-threat-note { color: #5d777b; }
+.rapid-day .rapid-threat-row { border-bottom-color: #0f6f7822 !important; }
+.rapid-day .rapid-threat-row > svg { color: #47666b; }
+.rapid-day .rapid-right-rail { scrollbar-color: #a9c4c7 transparent; }
+
+/* Area analysis drawer */
+.rapid-day .rapid-analysis-backdrop { background: #0f2a2f1f; }
+.rapid-day .rapid-detail { background: #f8fbfbf7; border-color: #0b7d8455; box-shadow: -15px 0 60px #0f2a2f26; }
+.rapid-day .rapid-detail > header button { color: #0f4449; }
+.rapid-day .rapid-detail-eyebrow,
+.rapid-day .rapid-detail-location > span,
+.rapid-day .rapid-detail-risk small,
+.rapid-day .rapid-detail-metrics strong small,
+.rapid-day .rapid-detail-body h3 > span,
+.rapid-day .rapid-trend-labels,
+.rapid-day .rapid-detail-exposure small { color: #5d777b; }
+.rapid-day .rapid-detail-location,
+.rapid-day .rapid-detail-summary,
+.rapid-day .rapid-detail-metrics span,
+.rapid-day .rapid-detail-exposure p { color: #264449; }
+.rapid-day .rapid-detail-body h3 { color: #0f4449; }
+.rapid-day .rapid-detail-metrics > div { background: #ffffff; }
+.rapid-day .rapid-detail-metrics svg { color: #0b7d84; }
+.rapid-day .rapid-detail-body > .rapid-spark { background: repeating-linear-gradient(0deg, #0f6f7814 0 1px, transparent 1px 20px); }
+.rapid-day .rapid-data-note { color: #6b4e14; border-color: #a8742a55; background: #a8742a0f; }
+.rapid-day .rapid-export { color: #0b6d73 !important; background: #0b7d8412 !important; border-color: #0b7d8455 !important; }
+
+/* Settings popover */
+.rapid-day .rapid-settings { background: #ffffffF7; box-shadow: 0 15px 50px #0f2a2f26; }
+.rapid-day .rapid-settings > p,
+.rapid-day .rapid-settings > small { color: #5d777b; }
+.rapid-day .rapid-settings > label { color: #264449; }
+
+/* Day/Night switch in the top bar (both modes) */
+.rapid-mode-toggle {
+  display: flex;
+  border: 1px solid var(--rl);
+  padding: 2px;
+}
+.rapid-mode-toggle button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  font: 9px monospace;
+  letter-spacing: 1px;
+  color: var(--rm);
+}
+.rapid-mode-toggle button[aria-pressed=true] {
+  color: var(--rc);
+  background: color-mix(in srgb, var(--rc) 14%, transparent);
+}
+.rapid-settings .rapid-mode-toggle { margin: 4px 0 12px; align-self: flex-start; }
+@media (max-width: 600px) {
+  .rapid-top-status .rapid-mode-toggle button span { display: none; }
+}

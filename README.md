@@ -4,7 +4,7 @@ This project is now a high-fidelity RAPID-AI dashboard prototype for oceanograph
 
 It includes:
 
-- Dark command-center dashboard layout
+- Dark command-center dashboard layout, with a **Day / Night mode** switch in the top bar (also in Settings). The choice is saved in the browser; the globe fades between a blue night tint and true-colour daylight
 - Sidebar navigation for live maps, ocean conditions, fisheries, biodiversity, predictions, alerts, assistant, uploads, and settings
 - KPI cards for sea surface temperature, chlorophyll, abundance, biodiversity, health score, and alerts
 - Leaflet marine explorer with zoom, pan, search, marker clustering, popups, coordinates, and layer controls
@@ -16,10 +16,11 @@ It includes:
 
 ## Run
 
-Serve the folder locally so Leaflet assets and the dynamic marker API request can load correctly:
+This is a Vite + React app:
 
 ```bash
-python -m http.server 4173
+npm install
+npm run dev
 ```
 
 Then open `http://localhost:4173`.

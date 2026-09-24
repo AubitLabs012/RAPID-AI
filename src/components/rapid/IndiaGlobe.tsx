@@ -11,15 +11,15 @@ function position(lat: number, lng: number, radius = 1) {
   return new THREE.Vector3(-radius * Math.sin(phi) * Math.cos(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.sin(theta));
 }
 
-export function IndiaGlobe({ selected, onSelect, markers, grid, reducedMotion, hazard }: { selected: string; onSelect: (region: Region) => void; markers: boolean; grid: boolean; reducedMotion: boolean; hazard: string }) {
+export function IndiaGlobe({ selected, onSelect, markers, grid, reducedMotion, hazard, dayMode = false }: { selected: string; onSelect: (region: Region) => void; markers: boolean; grid: boolean; reducedMotion: boolean; hazard: string; dayMode?: boolean }) {
   const mount = useRef<HTMLDivElement>(null);
   const select = useRef(onSelect);
-  const state = useRef({ selected, markers, grid, reducedMotion, hazard });
+  const state = useRef({ selected, markers, grid, reducedMotion, hazard, dayMode });
   const actions = useRef<{ zoom: (amount: number) => void; reset: () => void } | null>(null);
   const [notice, setNotice] = useState('Select a marker to explore its regional analysis');
   const [failed, setFailed] = useState(false);
   select.current = onSelect;
-  state.current = { selected, markers, grid, reducedMotion, hazard };
+  state.current = { selected, markers, grid, reducedMotion, hazard, dayMode };
 
   useEffect(() => {
     const host = mount.current;
@@ -49,7 +49,15 @@ export function IndiaGlobe({ selected, onSelect, markers, grid, reducedMotion, h
     texture.colorSpace = THREE.SRGBColorSpace;
     const sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 64), new THREE.MeshPhongMaterial({ map: texture, color: '#82c2dc', shininess: 8, specular: '#091819' }));
     earthGroup.add(sphere);
-    scene.add(new THREE.AmbientLight('#b2e9ff', 1.6));
+    const ambient = new THREE.AmbientLight('#b2e9ff', 1.6);
+    scene.add(ambient);
+    // Night keeps the blue command-center tint; day shows the true-colour surface, a little brighter.
+    const look = {
+      night: { tint: new THREE.Color('#82c2dc'), grid: new THREE.Color('#39c6d6'), ambient: 1.6 },
+      day: { tint: new THREE.Color('#ffffff'), grid: new THREE.Color('#ffffff'), ambient: 2.1 },
+    };
+    const startLook = state.current.dayMode ? look.day : look.night;
+    sphere.material.color.copy(startLook.tint); ambient.intensity = startLook.ambient;
     const sun = new THREE.DirectionalLight('#d3f5ff', 2.4);
     sun.position.set(-3, 4, 5); scene.add(sun);
     const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(1.025, 64, 48), new THREE.ShaderMaterial({
@@ -112,6 +120,12 @@ export function IndiaGlobe({ selected, onSelect, markers, grid, reducedMotion, h
     let frame = 0;
     const draw = (time: number) => {
       gridGroup.visible = state.current.grid; pinGroup.visible = state.current.markers;
+      // Ease toward the current mode's look so switching Day/Night fades instead of snapping.
+      const target = state.current.dayMode ? look.day : look.night;
+      const ease = state.current.reducedMotion ? 1 : 0.08;
+      sphere.material.color.lerp(target.tint, ease);
+      lineMaterial.color.lerp(target.grid, ease);
+      ambient.intensity += (target.ambient - ambient.intensity) * ease;
       for (const pin of pins) {
         pin.dot.visible = pin.ring.visible = state.current.hazard === 'All hazards' || pin.region.hazard === state.current.hazard;
         const active = pin.region.id === state.current.selected;

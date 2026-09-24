@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Activity, ArrowDownRight, ArrowUpRight, Bell, Check, ChevronRight, Crosshair, Database, Download, Globe2, Layers3, MapPin, Radio, Radar, Search, Settings, ShieldCheck, SlidersHorizontal, Target, Waves, Wind, X, Zap } from 'lucide-react';
+import { Activity, ArrowDownRight, ArrowUpRight, Bell, Check, ChevronRight, Crosshair, Database, Download, Globe2, Layers3, MapPin, Radio, Radar, Search, Settings, ShieldCheck, SlidersHorizontal, Target, Waves, Wind, X, Zap, Sun, Moon } from 'lucide-react';
 import { IndiaGlobe } from './IndiaGlobe';
 import { regions, type Region } from './regions';
 import { useDashboardStore } from '../../store';
 import './rapid.css';
+import './rapid-day.css';
 
 function Mark({ small = false }: { small?: boolean }) {
   return <svg className={small ? 'rapid-mark small' : 'rapid-mark'} viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M5 41 24 5l19 36M12 40 24 17l12 23M19 32h10" stroke="currentColor" strokeWidth="2" /><path d="m8 40 16-30 16 30" stroke="currentColor" strokeWidth=".5" /></svg>;
@@ -23,6 +24,16 @@ function RegionMap({ selected, onSelect }: { selected: Region; onSelect: (r: Reg
     {regions.map(r => { const x = 42 + (r.lng - 68) * 6.5; const y = 209 - (r.lat - 8) * 6.6; return <g key={r.id} onClick={() => onSelect(r)} className="rapid-map-pin" role="button" tabIndex={0} aria-label={`Analyze ${r.name}`} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(r); } }}><circle cx={x} cy={y} r="10" fill={r.level === 'High' ? '#ff5968' : '#e4b266'} opacity=".12" /><circle cx={x} cy={y} r={selected.id === r.id ? 5 : 3} fill={r.level === 'High' ? '#ff5968' : '#e4b266'} /><circle cx={x} cy={y} r="12" fill="transparent" /><title>{r.name} · {r.hazard}</title></g>; })}
     <text x="9" y="224" fill="#789496" fontSize="7" letterSpacing="1.4">INDIA / SCHEMATIC</text>
   </svg>;
+}
+
+// Day/Night switch. The choice is saved by the store (localStorage "maris_color_mode").
+function ModeToggle() {
+  const colorMode = useDashboardStore(s => s.colorMode);
+  const setColorMode = useDashboardStore(s => s.setColorMode);
+  return <div className="rapid-mode-toggle" role="group" aria-label="Display mode">
+    <button type="button" aria-pressed={colorMode === 'day'} onClick={() => setColorMode('day')} title="Day mode"><Sun size={12} /><span>DAY</span></button>
+    <button type="button" aria-pressed={colorMode === 'night'} onClick={() => setColorMode('night')} title="Night mode"><Moon size={12} /><span>NIGHT</span></button>
+  </div>;
 }
 
 const navigation = [
@@ -47,6 +58,7 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
   const setActiveNav = useDashboardStore(s => s.setActiveNav);
   const reducedMotion = useDashboardStore(s => s.reducedMotion);
   const setReducedMotion = useDashboardStore(s => s.setReducedMotion);
+  const colorMode = useDashboardStore(s => s.colorMode);
   const closeRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
@@ -78,12 +90,12 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
     const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `rapid-ai-${selected.id}-demo-analysis.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); setExported(true);
   }
 
-  return <div className={`rapid-shell ${reducedMotion || systemMotion ? 'rapid-reduced-motion' : ''}`}>
+  return <div className={`rapid-shell ${colorMode === 'day' ? 'rapid-day' : ''} ${reducedMotion || systemMotion ? 'rapid-reduced-motion' : ''}`}>
     <div className="rapid-background-grid" aria-hidden="true" />
     <header className="rapid-topbar">
       <a href="#" className="rapid-brand" onClick={e => { e.preventDefault(); navigate('Home'); }}><Mark /><span><strong>RAPID<span>-</span>AI</strong><small>DISASTER INTELLIGENCE NETWORK</small></span></a>
       <div className="rapid-motto">ONE NATION. <span>DEEPER INSIGHTS.</span></div>
-      <div className="rapid-top-status"><span className="rapid-status-dot" /> INDIA OPERATIONS <span className="rapid-divider" /><ShieldCheck size={14} /><span>DEMO WORKSPACE</span><button className="rapid-avatar" onClick={onLogout} title="Return to login" aria-label="Return to login">R</button></div>
+      <div className="rapid-top-status"><span className="rapid-status-dot" /> INDIA OPERATIONS <span className="rapid-divider" /><ShieldCheck size={14} /><span>DEMO WORKSPACE</span><ModeToggle /><button className="rapid-avatar" onClick={onLogout} title="Return to login" aria-label="Return to login">R</button></div>
     </header>
 
     <aside className="rapid-sidebar">
@@ -102,7 +114,7 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
       <div className="rapid-main-heading"><div><span className="rapid-eyebrow">NATIONAL COMMAND CENTER</span><h1>{activeNav === 'Live' ? 'Live monitoring' : 'Disaster intelligence'}<span> / INDIA</span></h1></div><span className="rapid-demo-tag"><span /> SAMPLE DATA</span></div>
       <div className="rapid-center-stage">
         <div className="rapid-orbit-scene" aria-hidden="true"><div className="rapid-orbit orbit-outer" /><div className="rapid-orbit orbit-gold" /><div className="rapid-orbit orbit-ticks" /><div className="rapid-orbit orbit-inner" /><div className="rapid-orbit orbit-fine" /><span className="orbit-cross top" /><span className="orbit-cross bottom" /><span className="orbit-cross left" /><span className="orbit-cross right" /></div>
-        <div className="rapid-globe-wrap"><IndiaGlobe hazard={layer} selected={selected.id} onSelect={selectRegion} markers={markers} grid={grid} reducedMotion={reducedMotion || systemMotion} /></div>
+        <div className="rapid-globe-wrap"><IndiaGlobe hazard={layer} selected={selected.id} onSelect={selectRegion} markers={markers} grid={grid} reducedMotion={reducedMotion || systemMotion} dayMode={colorMode === 'day'} /></div>
         <section className="rapid-floating rapid-view-menu"><h2><Globe2 size={13} /> INDIA VIEW</h2><small>REGIONAL INTELLIGENCE</small>{['All hazards', 'Cyclone', 'Flood', 'Earthquake', 'Heatwave', 'Landslide'].map(hazard => <button key={hazard} onClick={() => setLayer(hazard)} className={layer === hazard ? 'selected' : ''}><span className="rapid-radio" />{hazard}</button>)}</section>
         <section className="rapid-floating rapid-layer-menu"><h2><Layers3 size={13} /> SATELLITE LAYERS</h2><label><input type="checkbox" checked={markers} onChange={e => setMarkers(e.target.checked)} /> DISASTER MARKERS</label><label><input type="checkbox" checked={grid} onChange={e => setGrid(e.target.checked)} /> COORDINATE GRID</label><span className="rapid-layer-note">EARTH / OPTICAL BASEMAP</span></section>
         <div className="rapid-location-lock"><Crosshair size={16} /><span>FOCUS LOCK<strong>INDIAN SUBCONTINENT</strong></span></div>
@@ -125,7 +137,7 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
       <div className="rapid-rail-footer"><span className="rapid-status-dot" /> SYSTEM READY <span>IN / 01</span></div>
     </aside>
 
-    {activeNav === 'Settings' && <section className="rapid-settings rapid-panel" aria-label="Display settings"><header><h2><Settings size={15} /> DISPLAY SETTINGS</h2><button onClick={() => navigate('Home')} aria-label="Close settings"><X size={17} /></button></header><p>Customize the command center.</p><label><input type="checkbox" checked={reducedMotion} onChange={e => setReducedMotion(e.target.checked)} /> Reduce animation</label><label><input type="checkbox" checked={markers} onChange={e => setMarkers(e.target.checked)} /> Show disaster markers</label><label><input type="checkbox" checked={grid} onChange={e => setGrid(e.target.checked)} /> Show coordinate grid</label><small>Your device’s reduced-motion preference is also respected.</small></section>}
+    {activeNav === 'Settings' && <section className="rapid-settings rapid-panel" aria-label="Display settings"><header><h2><Settings size={15} /> DISPLAY SETTINGS</h2><button onClick={() => navigate('Home')} aria-label="Close settings"><X size={17} /></button></header><p>Customize the command center.</p><ModeToggle /><label><input type="checkbox" checked={reducedMotion} onChange={e => setReducedMotion(e.target.checked)} /> Reduce animation</label><label><input type="checkbox" checked={markers} onChange={e => setMarkers(e.target.checked)} /> Show disaster markers</label><label><input type="checkbox" checked={grid} onChange={e => setGrid(e.target.checked)} /> Show coordinate grid</label><small>Your device’s reduced-motion preference is also respected.</small></section>}
 
     {analysisOpen && <div className="rapid-analysis-backdrop" onClick={() => setAnalysisOpen(false)}><section ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="rapid-region-title" className="rapid-detail rapid-panel" onClick={e => e.stopPropagation()}><header><h2><Activity size={14} /> {activeNav === 'Predictions' ? 'REGIONAL SCENARIO OUTLOOK' : 'AREA ANALYSIS'}</h2><button ref={closeRef} onClick={() => setAnalysisOpen(false)} aria-label="Close area analysis"><X size={19} /></button></header><div className="rapid-detail-body"><div className="rapid-detail-eyebrow"><span className="rapid-demo-tag">ILLUSTRATIVE SCENARIO</span><span>IN / {selected.id.toUpperCase()}</span></div><h2 id="rapid-region-title">{selected.name}</h2><p className="rapid-detail-location"><MapPin size={14} />{selected.state}, India <span>{selected.lat.toFixed(3)}° N · {selected.lng.toFixed(3)}° E</span></p><div className="rapid-detail-risk"><div><small>PRIMARY HAZARD</small><strong>{selected.hazard}</strong></div><span className={`rapid-severity ${selected.level.toLowerCase()}`}>{selected.level} · {selected.score}/100</span></div><p className="rapid-detail-summary">{selected.summary}</p><div className="rapid-detail-metrics"><div><Waves size={18} /><strong>{selected.rain}<small>mm</small></strong><span>Sample 24h rainfall</span></div><div><Wind size={18} /><strong>{selected.wind}<small>km/h</small></strong><span>Sample wind speed</span></div><div><Target size={18} /><strong>{selected.score}<small>/100</small></strong><span>Demo risk index</span></div></div><h3>SCENARIO TREND <span>ILLUSTRATIVE SEQUENCE</span></h3><Sparkline values={selected.trend} gold /><div className="rapid-trend-labels"><span>START</span><span>SCENARIO STEPS →</span><span>END</span></div><div className="rapid-detail-exposure"><h3>EXPOSURE CONTEXT</h3><p>{selected.exposure}</p><small>Regional scenario only. No property-level or person-level assessment.</small></div><div className="rapid-data-note"><Database size={16} /><p><strong>Data status: demonstration</strong>Values are locally defined examples. No live observations, official warnings, or predictive model output are connected to this view.</p></div><button className="rapid-export" onClick={exportReport}>{exported ? <Check size={16} /> : <Download size={16} />}{exported ? 'REPORT DOWNLOADED' : 'EXPORT SCENARIO REPORT'}<ArrowDownRight size={15} /></button></div></section></div>}
   </div>;
