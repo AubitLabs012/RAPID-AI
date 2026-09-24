@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { Map as LibreMap, Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { Crosshair, Globe2, Map, Minus, Plus, Radar, Satellite } from 'lucide-react';
 import { regions, type Region } from './regions';
 import { loadDisasterMarkerImages } from './markerArt';
@@ -11,6 +12,8 @@ import './rapid-map.css';
 type Mode = 'satellite' | 'normal' | 'risks';
 const modes = [{ id: 'satellite', label: 'Satellite', icon: Satellite }, { id: 'normal', label: 'Normal', icon: Map }, { id: 'risks', label: 'Risk', icon: Radar }] as const;
 const colors: Record<string, string> = { Cyclone: '#cf48ff', Flood: '#4fe5ff', Tsunami: '#1976d2', Volcanic: '#ff263a', Earthquake: '#a8754f', Heatwave: '#ffc928', Landslide: '#39dc4a' };
+
+maplibregl.setWorkerUrl(workerUrl);
 
 function style(mode: Mode) {
   const satellite = mode === 'satellite';
