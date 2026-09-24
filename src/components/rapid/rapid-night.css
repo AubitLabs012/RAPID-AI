@@ -1,0 +1,91 @@
+/* Night mode keeps the globe canvas black and presents controls as white cards. */
+.rapid-shell:not(.rapid-day){background:#000;color:#f6fbfc}
+.rapid-shell:not(.rapid-day) .rapid-sidebar{background:#000}
+.rapid-shell:not(.rapid-day) .rapid-sidebar nav button{background:#fff;border:2px solid #292d2f!important;color:#172126;border-radius:4px}
+.rapid-shell:not(.rapid-day) .rapid-sidebar nav button.active{background:#fff;box-shadow:inset 3px 0 #087a88,0 0 12px #fff5}
+.rapid-shell:not(.rapid-day) .rapid-sidebar nav button strong,.rapid-shell:not(.rapid-day) .rapid-sidebar nav button.active strong{color:#16242a;font-weight:650}
+.rapid-shell:not(.rapid-day) .rapid-sidebar nav button small{color:#516269}
+.rapid-shell:not(.rapid-day) .rapid-sidebar nav button svg,.rapid-shell:not(.rapid-day) .rapid-sidebar nav button.active svg{color:#17616c}
+.rapid-shell:not(.rapid-day) .rapid-sidebar nav button:hover{color:#0b5663}
+.rapid-shell:not(.rapid-day) :is(.rapid-panel,.rapid-floating,.rapid-rail-icons,.rapid-history-event,.rapid-history-details,.rapid-history-type,.rapid-history-search,.rapid-history-filter,.rapid-history-show-all,.rapid-settings,.rapid-globe-tools,.rapid-live-clock){background:#fff!important;color:#172126;border:2px solid #33393b!important;box-shadow:0 4px 20px #0009}
+.rapid-shell:not(.rapid-day) .rapid-panel:before,.rapid-shell:not(.rapid-day) .rapid-panel:after{border-color:#1f5961}
+.rapid-shell:not(.rapid-day) .rapid-rail-icons button:hover,.rapid-shell:not(.rapid-day) .rapid-rail-icons button.active{background:#e5f4f5!important;color:#124852!important}
+.rapid-shell:not(.rapid-day) .rapid-floating h2,.rapid-shell:not(.rapid-day) .rapid-panel>header h2{color:#17383e}
+.rapid-shell:not(.rapid-day) .rapid-panel>header{border-bottom-color:#d7e1e2}
+.rapid-shell:not(.rapid-day) .rapid-panel>header>span,.rapid-shell:not(.rapid-day) .rapid-view-menu>small,.rapid-shell:not(.rapid-day) .rapid-layer-note{color:#566e73}
+.rapid-shell:not(.rapid-day) .rapid-view-menu button,.rapid-shell:not(.rapid-day) .rapid-layer-menu label{color:#253b40}
+.rapid-shell:not(.rapid-day) .rapid-view-menu button.selected{color:#0b6977}
+.rapid-shell:not(.rapid-day) .rapid-search input,.rapid-shell:not(.rapid-day) .rapid-history-search input,.rapid-shell:not(.rapid-day) .rapid-history-filter select{color:#172126;background:#fff}
+.rapid-shell:not(.rapid-day) .rapid-search input::placeholder,.rapid-shell:not(.rapid-day) .rapid-history-search input::placeholder{color:#63767a}
+.rapid-shell:not(.rapid-day) .rapid-region-list>button,.rapid-shell:not(.rapid-day) .rapid-threat-row{color:#22353a;border-bottom-color:#dbe5e5!important}
+.rapid-shell:not(.rapid-day) .rapid-region-list>button.selected,.rapid-shell:not(.rapid-day) .rapid-threat-row.selected{background:#e6f3f4!important}
+.rapid-shell:not(.rapid-day) .rapid-region-list small,.rapid-shell:not(.rapid-day) .rapid-region-list em,.rapid-shell:not(.rapid-day) .rapid-threat-row small,.rapid-shell:not(.rapid-day) .rapid-threat-note{color:#4f686c}
+.rapid-shell:not(.rapid-day) .rapid-threat-totals>span,.rapid-shell:not(.rapid-day) .rapid-threat-totals strong,.rapid-shell:not(.rapid-day) .rapid-score>strong,.rapid-shell:not(.rapid-day) .rapid-card-metrics strong{color:#172e34}
+.rapid-shell:not(.rapid-day) .rapid-analysis-title small,.rapid-shell:not(.rapid-day) .rapid-score>span,.rapid-shell:not(.rapid-day) .rapid-card-metrics>span{color:#506e73}
+.rapid-shell:not(.rapid-day) .rapid-analysis-title h3{color:#17383e}
+.rapid-shell:not(.rapid-day) .rapid-core>strong,.rapid-shell:not(.rapid-day) .rapid-stream-table>div,.rapid-shell:not(.rapid-day) .rapid-stream-table b{color:#214149}
+.rapid-shell:not(.rapid-day) .rapid-core>span,.rapid-shell:not(.rapid-day) .rapid-core>small,.rapid-shell:not(.rapid-day) .rapid-stream-table time,.rapid-shell:not(.rapid-day) .rapid-stream-foot{color:#5a7075}
+.rapid-shell:not(.rapid-day) .rapid-globe-tools button{color:#162f35!important;border-right-color:#cbd7d8}
+.rapid-shell:not(.rapid-day) .rapid-globe-tools output{color:#162f35}
+.rapid-shell:not(.rapid-day) .rapid-globe-tools button:hover{background:#e5f3f4}
+.rapid-shell:not(.rapid-day) :is(.rapid-map-toolbar,.rapid-map-filters,.rapid-map-zoom,.rapid-map-legend,.rapid-disaster-legend,.rapid-history-map-caption,.rapid-history-map-zoom){background:#fff;color:#172126;border:2px solid #33393b}
+.rapid-shell:not(.rapid-day) .rapid-map-toolbar button,.rapid-shell:not(.rapid-day) .rapid-map-filters label,.rapid-shell:not(.rapid-day) .rapid-map-filters select,.rapid-shell:not(.rapid-day) .rapid-map-zoom button,.rapid-shell:not(.rapid-day) .rapid-history-map-zoom button{color:#172126!important;background:#fff}
+.rapid-shell:not(.rapid-day) .rapid-map-modes button[aria-pressed=true]{background:#e5f3f4!important;border-color:#167281;color:#114b56!important}
+.rapid-shell:not(.rapid-day) .rapid-map-legend span,.rapid-shell:not(.rapid-day) .rapid-disaster-legend span,.rapid-shell:not(.rapid-day) .rapid-history-map-caption small{color:#39565c}
+.rapid-shell:not(.rapid-day) .rapid-history-type{background:#fff!important}
+.rapid-shell:not(.rapid-day) .rapid-history-type:hover,.rapid-shell:not(.rapid-day) .rapid-history-type.active{background:#fff!important;border-color:var(--hazard-color)!important}
+.rapid-shell:not(.rapid-day) .rapid-history-type strong,.rapid-shell:not(.rapid-day) .rapid-history-event h3,.rapid-shell:not(.rapid-day) .rapid-history-selected h3,.rapid-shell:not(.rapid-day) .rapid-history-select-hint strong{color:#172126}
+.rapid-shell:not(.rapid-day) .rapid-history-type small{color:#355961}
+.rapid-shell:not(.rapid-day) .rapid-history-count,.rapid-shell:not(.rapid-day) .rapid-history-event time,.rapid-shell:not(.rapid-day) .rapid-history-event footer,.rapid-shell:not(.rapid-day) .rapid-history-event footer span{color:#50666b}
+.rapid-shell:not(.rapid-day) .rapid-history-tags span{color:#205866;background:#eaf3f4;border-color:#cddddd}
+.rapid-shell:not(.rapid-day) .rapid-history-location,.rapid-shell:not(.rapid-day) .rapid-history-summary,.rapid-shell:not(.rapid-day) .rapid-history-note{color:#354e54}
+.rapid-shell:not(.rapid-day) .rapid-history-impact{color:#79552c}
+.rapid-shell:not(.rapid-day) .rapid-history-note{background:#fff;border:2px solid #33393b;border-left:4px solid #ae7834}
+.rapid-shell:not(.rapid-day) .rapid-history-show-all{color:#17383e!important}
+.rapid-shell:not(.rapid-day) .rapid-history-show-all:hover{background:#e8f4f5!important}
+.rapid-shell:not(.rapid-day) .rapid-history-selected>p,.rapid-shell:not(.rapid-day) .rapid-history-selected-place,.rapid-shell:not(.rapid-day) .rapid-history-index>button{color:#304b51!important}
+.rapid-shell:not(.rapid-day) .rapid-history-index>button.active{background:#e1f0f2!important}
+.rapid-shell:not(.rapid-day) .rapid-history-index small,.rapid-shell:not(.rapid-day) .rapid-history-index>strong,.rapid-shell:not(.rapid-day) .rapid-history-selected-source,.rapid-shell:not(.rapid-day) .rapid-history-selected-source strong{color:#526b70}
+.rapid-shell:not(.rapid-day) .rapid-history-stat-grid span{color:#53696e;border-color:#cbd9db}
+.rapid-shell:not(.rapid-day) .rapid-history-stat-grid strong{color:#533f2a}
+.rapid-shell:not(.rapid-day) .rapid-history-select-hint{color:#526b70;border-bottom-color:#cedcde}
+.rapid-shell:not(.rapid-day) .rapid-detail{background:#fff;color:#172126}
+.rapid-shell:not(.rapid-day) .rapid-detail-body>h2,.rapid-shell:not(.rapid-day) .rapid-detail-risk strong{color:#172126}
+.rapid-shell:not(.rapid-day) .rapid-detail-summary,.rapid-shell:not(.rapid-day) .rapid-detail-location,.rapid-shell:not(.rapid-day) .rapid-detail-exposure p{color:#38565d}
+.rapid-shell:not(.rapid-day) .rapid-detail-metrics>div,.rapid-shell:not(.rapid-day) .rapid-data-note{background:#f3f8f8;color:#20383e}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-sky,.rapid-shell:not(.rapid-day) .rapid-live-clock.is-day .rapid-live-clock-sky,.rapid-shell:not(.rapid-day) .rapid-live-clock-weather,.rapid-shell:not(.rapid-day) .rapid-live-clock-season{background:#fff;color:#172126}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-sky:before,.rapid-shell:not(.rapid-day) .rapid-live-clock-sky:after{display:none}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-sky{border-bottom:2px solid #dce6e8}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-head>span,.rapid-shell:not(.rapid-day) .rapid-live-clock-time strong,.rapid-shell:not(.rapid-day) .rapid-live-clock-time span,.rapid-shell:not(.rapid-day) .rapid-live-clock-date,.rapid-shell:not(.rapid-day) .rapid-live-clock-current strong,.rapid-shell:not(.rapid-day) .rapid-live-clock-current strong small,.rapid-shell:not(.rapid-day) .rapid-live-clock-current span,.rapid-shell:not(.rapid-day) .rapid-live-clock-metrics strong,.rapid-shell:not(.rapid-day) .rapid-live-clock-forecast>div strong{color:#172126;text-shadow:none}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-kicker,.rapid-shell:not(.rapid-day) .rapid-live-clock-greeting,.rapid-shell:not(.rapid-day) .rapid-live-clock-weather>p,.rapid-shell:not(.rapid-day) .rapid-live-clock-forecast h3,.rapid-shell:not(.rapid-day) .rapid-live-clock-forecast>div,.rapid-shell:not(.rapid-day) .rapid-live-clock-forecast>div>span:nth-child(3){color:#45636a}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-greeting{border-top-color:#cbdadc}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-head button{color:#164b58!important;background:#e9f2f3!important}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-metrics>span{background:#fff;color:#45636a;border-color:#cbdadc}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-season{border:2px solid #d5b992}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-season small,.rapid-shell:not(.rapid-day) .rapid-live-clock-season strong{color:#714d2e}
+.rapid-shell:not(.rapid-day) .rapid-live-clock footer{color:#526e75;border-top-color:#d7e3e5}
+
+/* White block surfaces are shared by both display modes. */
+.rapid-shell.rapid-day .rapid-sidebar nav button{background:#fff;border:2px solid #33393b!important;border-radius:4px}
+.rapid-shell.rapid-day .rapid-sidebar nav button.active{background:#fff;box-shadow:inset 3px 0 #0b7d84}
+.rapid-shell.rapid-day :is(.rapid-panel,.rapid-floating,.rapid-rail-icons,.rapid-history-event,.rapid-history-details,.rapid-history-type,.rapid-history-search,.rapid-history-filter,.rapid-history-show-all,.rapid-settings,.rapid-live-clock,.rapid-map-toolbar,.rapid-map-filters,.rapid-map-zoom,.rapid-map-legend,.rapid-disaster-legend,.rapid-history-map-caption,.rapid-history-map-zoom){background:#fff!important;border-color:#33393b!important;border-width:2px}
+.rapid-shell.rapid-day .rapid-history-type:hover,.rapid-shell.rapid-day .rapid-history-type.active{background:#fff!important;border-color:var(--hazard-color)!important}
+.rapid-shell.rapid-day .rapid-live-clock-sky,.rapid-shell.rapid-day .rapid-live-clock-weather,.rapid-shell.rapid-day .rapid-live-clock-season{background:#fff}
+.rapid-shell.rapid-day .rapid-live-clock-sky:before,.rapid-shell.rapid-day .rapid-live-clock-sky:after{display:none}
+.rapid-shell.rapid-day .rapid-live-clock-sky{border-bottom:2px solid #dce6e8}
+.rapid-shell.rapid-day .rapid-live-clock-head>span,.rapid-shell.rapid-day .rapid-live-clock-time strong,.rapid-shell.rapid-day .rapid-live-clock-time span,.rapid-shell.rapid-day .rapid-live-clock-date,.rapid-shell.rapid-day .rapid-live-clock-greeting,.rapid-shell.rapid-day .rapid-live-clock-kicker{color:#17343b;text-shadow:none}
+.rapid-shell.rapid-day .rapid-live-clock-season{border:2px solid #d5b992}
+.rapid-shell.rapid-day .rapid-live-clock-metrics>span{background:#fff;border-color:#cbdadc}
+
+/* Settings readability applies in both modes. */
+.rapid-shell .rapid-settings{width:min(380px,calc(100vw - 95px));font-family:'Segoe UI',Arial,sans-serif;font-size:15px;line-height:1.5}
+.rapid-shell .rapid-settings>header{min-height:52px}
+.rapid-shell .rapid-settings>header h2{font:650 17px/1.3 'Segoe UI',Arial,sans-serif;letter-spacing:.2px}
+.rapid-shell .rapid-settings>p{padding:12px 18px 4px;font-size:15px;line-height:1.5}
+.rapid-shell .rapid-settings>label{align-items:center;padding:13px 18px;font:14px/1.45 'Segoe UI',Arial,sans-serif}
+.rapid-shell .rapid-settings>small{padding:14px 18px 20px;font:12px/1.55 'Segoe UI',Arial,sans-serif}
+.rapid-shell .rapid-settings .rapid-mode-toggle{display:inline-flex;width:max-content;margin:6px 18px 12px}
+.rapid-shell .rapid-settings .rapid-mode-toggle button{font:12px/1.3 'Segoe UI',Arial,sans-serif}
+.rapid-shell .rapid-settings input[type=checkbox]{width:16px;height:16px;flex:none}
+.rapid-shell:not(.rapid-day) .rapid-settings>header h2,.rapid-shell:not(.rapid-day) .rapid-settings>p,.rapid-shell:not(.rapid-day) .rapid-settings>label,.rapid-shell:not(.rapid-day) .rapid-settings>small{color:#172126}
+@media(max-width:600px){.rapid-shell .rapid-settings{left:65px;width:calc(100vw - 80px)}}

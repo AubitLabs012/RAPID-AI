@@ -12,6 +12,7 @@ import './rapid.css';
 import './rapid-day.css';
 import './history.css';
 import './command-clock.css';
+import './rapid-night.css';
 import railIconsUrl from '../../assets/rapid-rail-icons.png';
 
 function Mark({ small = false }: { small?: boolean }) {
