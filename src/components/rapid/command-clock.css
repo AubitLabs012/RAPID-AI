@@ -1,0 +1,55 @@
+.rapid-live-compact{display:flex;align-items:center;gap:10px;margin-right:6px;color:#b6d5db;white-space:nowrap}
+.rapid-live-compact>span{display:inline-flex;align-items:center;gap:4px}
+.rapid-live-compact svg{color:#80cce7;flex:none}
+.rapid-live-compact strong{font:10px/1.2 monospace;letter-spacing:.2px;color:#e2f1f8}
+.rapid-live-compact small{font:7px/1.2 monospace;letter-spacing:0;color:#91b0b9}
+.rapid-live-clock{display:flex;flex-direction:column;min-height:100%;overflow:hidden;border:2px solid #151819;border-radius:15px;background:#091b2a;color:#e8f5ff;box-shadow:0 18px 42px #0008, inset 0 1px #8bd3ff55}
+.rapid-live-clock-sky{position:relative;isolation:isolate;padding:17px 16px 19px;min-height:224px;background:radial-gradient(circle at 80% 34%,#b4dbffbb 0 2px,transparent 3px),radial-gradient(circle at 74% 29%,#ecf8ff 0 1px,transparent 2px),radial-gradient(circle at 91% 48%,#deeeff 0 1px,transparent 2px),radial-gradient(ellipse at 82% 40%,#2b67b3 0,#164173 29%,transparent 67%),linear-gradient(160deg,#07192e,#0b365d 68%,#18384e)}
+.rapid-live-clock-sky:before{content:'';position:absolute;z-index:-1;right:21px;top:75px;width:46px;height:46px;border-radius:50%;box-shadow:11px -7px 0 0 #cdeeff;filter:drop-shadow(0 0 8px #d2f4ff)}
+.rapid-live-clock-sky:after{content:'';position:absolute;z-index:-1;bottom:0;left:0;right:0;height:63px;background:linear-gradient(155deg,transparent 32%,#0c2940 32% 42%,transparent 42%),linear-gradient(25deg,transparent 23%,#102e48 23% 45%,transparent 45%),linear-gradient(165deg,transparent 47%,#071e34 47%);opacity:.88}
+.rapid-live-clock.is-day .rapid-live-clock-sky{background:radial-gradient(circle at 81% 33%,#fff3ae 0 17px,#ffcb6a99 19px,transparent 44px),linear-gradient(155deg,#104c8c,#2e86c5 65%,#8db9d5)}
+.rapid-live-clock.is-day .rapid-live-clock-sky:before{display:none}
+.rapid-live-clock-head{display:flex;align-items:center;justify-content:space-between;gap:7px;position:relative;z-index:1}
+.rapid-live-clock-head>span{display:flex;align-items:center;gap:5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:#edf8ff}
+.rapid-live-clock-head button{display:grid;place-items:center;flex:none;width:28px;height:28px;color:#d0eaff!important;border-radius:50%;background:#ffffff16!important}
+.rapid-live-clock-head button:hover{background:#ffffff30!important}
+.rapid-live-clock-kicker{display:flex;align-items:center;gap:6px;position:relative;z-index:1;margin-top:16px;font:7px monospace;letter-spacing:1px;color:#bbd8e6}
+.rapid-live-clock-kicker i{width:5px;height:5px;border-radius:50%;background:#66e2b0;box-shadow:0 0 7px #66e2b0}
+.rapid-live-clock-time{display:flex;align-items:baseline;gap:8px;position:relative;z-index:1;margin-top:8px}
+.rapid-live-clock-time strong{font:500 clamp(43px,4.7vw,62px)/1 monospace;letter-spacing:-4px;color:#fff;text-shadow:0 2px 14px #03223c}
+.rapid-live-clock-time span{font:14px monospace;color:#d6ecfa}
+.rapid-live-clock-date{display:block;position:relative;z-index:1;margin-top:8px;font-size:13px;color:#e2f2fc}
+.rapid-live-clock-greeting{display:flex;align-items:center;gap:8px;position:relative;z-index:1;margin-top:22px;padding-top:12px;border-top:1px solid #e2f4ff5e;font-size:11px;color:#d3eaf7}
+.rapid-live-clock-weather{padding:16px 16px 12px;background:radial-gradient(circle at 82% 12%,#d2b25b30,transparent 38%),linear-gradient(155deg,#174b70,#102b48 78%)}
+.rapid-live-clock-current{display:flex;align-items:center;gap:14px}.rapid-live-clock-current>svg{flex:none;color:#b8e8ff;filter:drop-shadow(0 0 9px #b9e5ff)}
+.rapid-live-clock-current>div{display:flex;flex-direction:column;gap:2px}
+.rapid-live-clock-current strong{font:500 43px/1 monospace;letter-spacing:-3px;color:#fff}
+.rapid-live-clock-current strong small{font-size:21px;letter-spacing:0;color:#d7edff}
+.rapid-live-clock-current span{font-size:12px;font-weight:500;color:#ebf9ff}
+.rapid-live-clock-weather>p{margin:10px 0 13px;font-size:9px;line-height:1.4;color:#b5d3e3}
+.rapid-live-clock-metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.rapid-live-clock-metrics>span{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:8px 7px;border:1px solid #a4d8ff49;border-radius:8px;background:#ffffff0e;font:7px monospace;letter-spacing:.5px;color:#b6d7e6}
+.rapid-live-clock-metrics svg{color:#a5dfff}
+.rapid-live-clock-metrics strong{width:100%;font:12px monospace;letter-spacing:0;color:#fff}
+.rapid-live-clock-season{display:flex;align-items:center;gap:11px;margin:9px 9px 0;padding:12px 13px;border:1px solid #f5b27968;border-radius:11px;background:linear-gradient(125deg,#8f452b77,#432827b5 80%);color:#ffd3a0}
+.rapid-live-clock-season svg{flex:none;filter:drop-shadow(0 0 6px #ffac57)}
+.rapid-live-clock-season small{display:block;font:7px monospace;letter-spacing:1px;color:#f2bb8c}
+.rapid-live-clock-season strong{display:block;margin-top:3px;font-size:18px;font-weight:500;letter-spacing:1.5px}
+.rapid-live-clock-forecast{padding:14px 15px 4px;flex:1}
+.rapid-live-clock-forecast h3{display:flex;justify-content:space-between;gap:5px;margin:0 0 6px;font:8px monospace;letter-spacing:1px;color:#cee9f2}
+.rapid-live-clock-forecast h3 span{font-size:6px;color:#7ea7b8}
+.rapid-live-clock-forecast>div{display:grid;grid-template-columns:37px 18px minmax(0,1fr) auto;align-items:center;gap:6px;padding:7px 0;border-top:1px solid #88b4c133;color:#c4dce8;font-size:9px}
+.rapid-live-clock-forecast>div svg{color:#b6ddf1}
+.rapid-live-clock-forecast>div>span:nth-child(3){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#94b7c8}
+.rapid-live-clock-forecast>div strong{color:#edf6fc;font:10px monospace}
+.rapid-live-clock-forecast>p{font-size:9px;color:#a5c5d5}
+.rapid-live-clock footer{padding:8px 15px 10px;border-top:1px solid #80b2cd27;font:6px monospace;letter-spacing:.5px;color:#7397a9}
+.rapid-day .rapid-live-compact strong{color:#234b5a}.rapid-day .rapid-live-compact small{color:#567e88}
+.rapid-day .rapid-live-clock{background:#e4eff3;color:#113746}
+.rapid-day .rapid-live-clock-weather{background:linear-gradient(155deg,#b2dcf2,#d9ebf4)}
+.rapid-day .rapid-live-clock-current strong,.rapid-day .rapid-live-clock-current span,.rapid-day .rapid-live-clock-metrics strong,.rapid-day .rapid-live-clock-forecast>div strong{color:#17394d}
+.rapid-day .rapid-live-clock-weather>p,.rapid-day .rapid-live-clock-metrics>span,.rapid-day .rapid-live-clock-forecast>div,.rapid-day .rapid-live-clock-forecast h3{color:#396476}
+.rapid-day .rapid-live-clock-season{background:linear-gradient(125deg,#f6cf9d,#efb98f);color:#65371e}
+.rapid-day .rapid-live-clock-season small{color:#805735}
+@media(max-width:1200px){.rapid-live-compact{gap:6px}.rapid-live-compact small{display:none}.rapid-live-clock-time strong{font-size:47px}}
+@media(max-width:600px){.rapid-topbar{margin:0 6px;gap:4px}.rapid-brand{gap:4px}.rapid-brand .rapid-mark{width:27px;height:31px}.rapid-brand strong{font-size:16px;letter-spacing:2.5px}.rapid-brand small{font-size:4.5px;letter-spacing:.8px}.rapid-top-status{gap:3px}.rapid-live-compact{display:grid;grid-template-columns:auto 1fr;gap:1px 4px;margin-right:0;width:138px;max-width:138px;min-width:0}.rapid-live-compact>span{gap:2px}.rapid-live-compact>span:nth-child(2){grid-row:2;grid-column:1/-1}.rapid-live-compact>span:nth-child(3){grid-row:1;grid-column:2}.rapid-live-compact svg{display:none}.rapid-live-compact strong{font-size:8px}.rapid-live-compact small{display:inline;font-size:7px}.rapid-live-compact>span:nth-child(2) small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rapid-live-compact>span:nth-child(2) small:before{content:'·';margin:0 2px}.rapid-live-clock{min-height:610px}.rapid-live-clock-time strong{font-size:58px}}

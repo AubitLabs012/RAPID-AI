@@ -3,7 +3,7 @@ import { describeWeather, isSevereWeather, useLiveWeather } from '../../services
 import type { Region } from './regions';
 import './rapid-weather.css';
 
-function iconFor(code: number, isDay = true): LucideIcon {
+export function iconFor(code: number, isDay = true): LucideIcon {
   if (code === 0 || code === 1) return isDay ? Sun : Moon;
   if (code === 2) return isDay ? CloudSun : CloudMoon;
   if (code === 3) return Cloud;
