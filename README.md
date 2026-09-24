@@ -9,6 +9,7 @@ It includes:
 - KPI cards for sea surface temperature, chlorophyll, abundance, biodiversity, health score, and alerts
 - Leaflet marine explorer with zoom, pan, search, marker clustering, popups, coordinates, and layer controls
 - Marine layers for SST, chlorophyll, fisheries, biodiversity, coral reefs, and ocean currents
+- **Live weather** for each region from [Open-Meteo](https://open-meteo.com/) (free, no API key): current conditions on the Regional Analysis card, plus current readings and a 3-day forecast in the area analysis drawer. Refreshes on the Settings data-refresh interval (default 10 min). Code: `src/services/weather.ts`, `src/components/rapid/LiveWeather.tsx`
 - Dynamic marker loading from `src/marine-markers.json`, which can be replaced with a backend API endpoint
 - Analytics panels for fish prediction, biodiversity distribution, and ocean health
 - Alerts and AI assistant side panels
