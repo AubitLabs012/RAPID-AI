@@ -41,7 +41,7 @@ export function RapidMap({ focus, selected, onSelect, onClose, hazard, onHazardC
 
   useEffect(() => {
     if (!host.current) return;
-    const map = L.map(host.current, { center: [initialFocus.current.lat, initialFocus.current.lng], zoom: 5,
+    const map = L.map(host.current, { center: [initialFocus.current.lat, initialFocus.current.lng], zoom: initialFocus.current.region ? 8 : 5,
       minZoom: 2, maxZoom: 19, zoomControl: false, worldCopyJump: true,
       zoomAnimation: !reducedMotion, fadeAnimation: !reducedMotion, markerZoomAnimation: !reducedMotion });
     mapRef.current = map;
@@ -82,7 +82,10 @@ export function RapidMap({ focus, selected, onSelect, onClose, hazard, onHazardC
       tooltip.textContent = `${region.name} · ${region.hazard} · ${region.level}`;
       L.marker([region.lat, region.lng], { icon, title: label, alt: label, keyboard: true, riseOnHover: true })
         .bindTooltip(tooltip, { direction: 'top', offset: [0, -28] })
-        .on('click', () => selectRef.current(region)).addTo(layer);
+        .on('click', () => {
+          map.flyTo([region.lat, region.lng], Math.max(8, map.getZoom()), { animate: !reducedMotion, duration: 0.85 });
+          selectRef.current(region);
+        }).addTo(layer);
     }
     return () => { layer.remove(); };
   }, [mode, hazard, markers, selected.id, reducedMotion]);
@@ -90,7 +93,7 @@ export function RapidMap({ focus, selected, onSelect, onClose, hazard, onHazardC
   useEffect(() => {
     if (selected.id === previousSelected.current) return;
     previousSelected.current = selected.id;
-    mapRef.current?.setView([selected.lat, selected.lng], Math.max(5, mapRef.current.getZoom()), { animate: !reducedMotion });
+    mapRef.current?.flyTo([selected.lat, selected.lng], Math.max(8, mapRef.current.getZoom()), { animate: !reducedMotion, duration: 0.85 });
   }, [selected, reducedMotion]);
 
   return <section className="rapid-map-view" aria-label="Interactive regional map">

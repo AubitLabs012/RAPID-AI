@@ -48,12 +48,14 @@ const navigation = [
 ];
 
 export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
+  type RailPanel = 'alerts' | 'observation' | 'analysis';
   const [selected, setSelected] = useState(regions[0]);
   const [analysisOpen, setAnalysisOpen] = useState(false);
   const [layer, setLayer] = useState('All hazards');
   const [markers, setMarkers] = useState(true);
   const [grid, setGrid] = useState(false);
   const [mapFocus, setMapFocus] = useState<MapFocus | null>(null);
+  const [activeRailPanel, setActiveRailPanel] = useState<RailPanel | null>(null);
   const [clock, setClock] = useState(new Date());
   const [exported, setExported] = useState(false);
   const [systemMotion, setSystemMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -88,6 +90,11 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
   }, [analysisOpen]);
 
   function selectRegion(region: Region) { setSelected(region); setAnalysisOpen(true); setExported(false); }
+  function focusRegion(region: Region) {
+    setSelected(region);
+    setAnalysisOpen(false);
+    setActiveRailPanel('analysis');
+  }
   function navigate(name: string) { setActiveNav(name); if (name === 'Analytics' || name === 'Predictions') { setAnalysisOpen(true); setExported(false); } else setAnalysisOpen(false); }
   function exportReport() {
     const blob = new Blob([JSON.stringify({ application: 'RAPID-AI', dataStatus: 'ILLUSTRATIVE DEMO — NOT LIVE DATA OR A FORECAST', region: selected }, null, 2)], { type: 'application/json' });
@@ -112,7 +119,7 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
     <main className="rapid-main">
       <div className="rapid-main-heading"><div><span className="rapid-eyebrow">NATIONAL COMMAND CENTER</span><h1>{activeNav === 'Live' ? 'Live monitoring' : 'Disaster intelligence'}<span> / INDIA</span></h1></div><span className="rapid-demo-tag"><span /> SAMPLE DATA</span></div>
       <div className={`rapid-center-stage ${mapFocus ? 'map-open' : ''}`}>
-        {mapFocus ? <RapidMap focus={mapFocus} selected={selected} onSelect={selectRegion} onClose={() => setMapFocus(null)} hazard={layer} onHazardChange={setLayer} markers={markers} onMarkersChange={setMarkers} reducedMotion={reducedMotion || systemMotion} /> : <>
+        {mapFocus ? <RapidMap focus={mapFocus} selected={selected} onSelect={focusRegion} onClose={() => setMapFocus(null)} hazard={layer} onHazardChange={setLayer} markers={markers} onMarkersChange={setMarkers} reducedMotion={reducedMotion || systemMotion} /> : <>
         <div className="rapid-orbit-scene" aria-hidden="true"><div className="rapid-orbit orbit-outer" /><div className="rapid-orbit orbit-gold" /><div className="rapid-orbit orbit-ticks" /><div className="rapid-orbit orbit-inner" /><div className="rapid-orbit orbit-fine" /><span className="orbit-cross top" /><span className="orbit-cross bottom" /><span className="orbit-cross left" /><span className="orbit-cross right" /></div>
         <div className="rapid-globe-wrap"><IndiaGlobe hazard={layer} selected={selected.id} onOpenMap={focus => { if (focus.region) setSelected(focus.region); setMapFocus(focus); }} markers={markers} grid={grid} reducedMotion={reducedMotion || systemMotion} dayMode={colorMode === 'day'} /></div>
         <section className="rapid-floating rapid-view-menu"><h2><Globe2 size={13} /> INDIA VIEW</h2><small>REGIONAL INTELLIGENCE</small>{['All hazards', 'Cyclone', 'Flood', 'Earthquake', 'Heatwave', 'Landslide'].map(hazard => <button key={hazard} onClick={() => setLayer(hazard)} className={layer === hazard ? 'selected' : ''}><span className="rapid-radio" />{hazard}</button>)}</section>
@@ -126,9 +133,16 @@ export function RapidDashboard({ onLogout }: { onLogout: () => void }) {
     </main>
 
     <aside className="rapid-right-rail" aria-label="Regional overview">
-      <section className="rapid-panel rapid-threat"><header><h2 aria-label="Risks and alerts" title="Risks and alerts"><Radar size={13} /><Bell size={12} /><span className="sr-only">RISKS &amp; ALERTS</span></h2><span>INDIA</span></header><div className="rapid-threat-totals"><span><i className="rapid-risk-dot high" /><strong>04</strong> HIGH</span><span><i className="rapid-risk-dot moderate" /><strong>04</strong> MODERATE</span></div>{regions.filter(r => r.level === 'High').slice(0, 3).map(r => <button className="rapid-threat-row" key={r.id} onClick={() => selectRegion(r)}><span className="rapid-risk-dot high" /><span>{r.state}<small>{r.hazard} scenario</small></span><ArrowUpRight size={13} /></button>)}<div className="rapid-threat-note">Sample scenarios, not active warnings</div></section>
-      <section className="rapid-panel rapid-sector"><header><h2 aria-label="Regional observation" title="Regional observation"><SatelliteIcon /><span className="sr-only">REGIONAL OBSERVATION</span></h2><SlidersHorizontal size={12} /></header><div className="rapid-observation"><RegionMap selected={selected} onSelect={selectRegion} /><div className="rapid-observation-caption"><span>AREA OF INTEREST<strong>{selected.state.toUpperCase()}</strong><small>{selected.lat.toFixed(3)}° N / {selected.lng.toFixed(3)}° E</small></span><span className="rapid-outline-tag">SCHEMATIC</span></div><div className="rapid-crosshair-corner tl" /><div className="rapid-crosshair-corner br" /></div><button className="rapid-panel-link" onClick={() => selectRegion(selected)}>EXPLORE {selected.name.toUpperCase()}<ArrowUpRight size={14} /></button></section>
-      <section className="rapid-panel rapid-analysis-card"><header><h2 aria-label="Regional analysis" title="Regional analysis"><Zap size={13} /><span className="sr-only">REGIONAL ANALYSIS</span></h2><span>DEMO</span></header><div className="rapid-analysis-title"><div><small>{selected.state.toUpperCase()}</small><h3>{selected.hazard} exposure</h3></div><span className={`rapid-severity ${selected.level.toLowerCase()}`}>{selected.level}</span></div><div className="rapid-score"><strong>{selected.score}<small>/100</small></strong><span>ILLUSTRATIVE<br />RISK INDEX</span><ArrowUpRight size={20} /></div><Sparkline values={selected.trend} /><div className="rapid-card-metrics"><span>RAINFALL <strong>{selected.rain}<small> mm / 24h</small></strong></span><span>WIND <strong>{selected.wind}<small> km/h</small></strong></span></div><LiveWeatherLine region={selected} /><button className="rapid-panel-link" onClick={() => selectRegion(selected)}>OPEN AREA ANALYSIS<ArrowUpRight size={14} /></button></section>
+      <nav className="rapid-rail-icons" aria-label="Regional data panels">
+        <button type="button" title="Risks and alerts" aria-label="Risks and alerts" aria-expanded={activeRailPanel === 'alerts'} onClick={() => setActiveRailPanel(activeRailPanel === 'alerts' ? null : 'alerts')} className={activeRailPanel === 'alerts' ? 'active alerts' : 'alerts'}><Radar size={17} /><Bell size={12} /></button>
+        <button type="button" title="Regional observation" aria-label="Regional observation" aria-expanded={activeRailPanel === 'observation'} onClick={() => setActiveRailPanel(activeRailPanel === 'observation' ? null : 'observation')} className={activeRailPanel === 'observation' ? 'active' : ''}><SatelliteIcon /></button>
+        <button type="button" title="Regional analysis" aria-label="Regional analysis" aria-expanded={activeRailPanel === 'analysis'} onClick={() => setActiveRailPanel(activeRailPanel === 'analysis' ? null : 'analysis')} className={activeRailPanel === 'analysis' ? 'active' : ''}><Zap size={16} /></button>
+      </nav>
+      <div className="rapid-rail-content" key={activeRailPanel ?? 'closed'}>
+        {activeRailPanel === 'alerts' && <section className="rapid-panel rapid-threat"><header><h2><Radar size={13} /><Bell size={12} /> RISKS &amp; ALERTS</h2><span>{selected.state.toUpperCase()}</span></header><div className="rapid-threat-totals"><span><i className={`rapid-risk-dot ${selected.level.toLowerCase()}`} /><strong>{selected.level === 'High' ? '04' : '03'}</strong> HIGH</span><span><i className="rapid-risk-dot moderate" /><strong>04</strong> MODERATE</span></div><button className="rapid-threat-row selected" onClick={() => focusRegion(selected)}><span className={`rapid-risk-dot ${selected.level.toLowerCase()}`} /><span>{selected.state}<small>{selected.hazard} scenario · selected region</small></span><ArrowUpRight size={13} /></button>{regions.filter(r => r.id !== selected.id && r.level === 'High').slice(0, 3).map(r => <button className="rapid-threat-row" key={r.id} onClick={() => focusRegion(r)}><span className="rapid-risk-dot high" /><span>{r.state}<small>{r.hazard} scenario</small></span><ArrowUpRight size={13} /></button>)}<div className="rapid-threat-note">Sample scenarios, not active warnings</div></section>}
+        {activeRailPanel === 'observation' && <section className="rapid-panel rapid-sector"><header><h2><SatelliteIcon /> REGIONAL OBSERVATION</h2><span>{selected.id.toUpperCase()}</span></header><div className="rapid-observation"><RegionMap selected={selected} onSelect={focusRegion} /><div className="rapid-observation-caption"><span>AREA OF INTEREST<strong>{selected.state.toUpperCase()}</strong><small>{selected.lat.toFixed(3)}° N / {selected.lng.toFixed(3)}° E</small></span><span className="rapid-outline-tag">SCHEMATIC</span></div><div className="rapid-crosshair-corner tl" /><div className="rapid-crosshair-corner br" /></div><button className="rapid-panel-link" onClick={() => focusRegion(selected)}>VIEW {selected.name.toUpperCase()}<ArrowUpRight size={14} /></button></section>}
+        {activeRailPanel === 'analysis' && <section className="rapid-panel rapid-analysis-card"><header><h2><Zap size={13} /> REGIONAL ANALYSIS</h2><span>{selected.id.toUpperCase()}</span></header><div className="rapid-analysis-title"><div><small>{selected.state.toUpperCase()}</small><h3>{selected.hazard} exposure</h3></div><span className={`rapid-severity ${selected.level.toLowerCase()}`}>{selected.level}</span></div><div className="rapid-score"><strong>{selected.score}<small>/100</small></strong><span>ILLUSTRATIVE<br />RISK INDEX</span><ArrowUpRight size={20} /></div><Sparkline values={selected.trend} /><div className="rapid-card-metrics"><span>RAINFALL <strong>{selected.rain}<small> mm / 24h</small></strong></span><span>WIND <strong>{selected.wind}<small> km/h</small></strong></span></div><LiveWeatherLine region={selected} /><button className="rapid-panel-link" onClick={() => selectRegion(selected)}>FULL AREA ANALYSIS<ArrowUpRight size={14} /></button></section>}
+      </div>
       <div className="rapid-rail-footer"><span className="rapid-status-dot" /> SYSTEM READY <span>IN / 01</span></div>
     </aside>
 
