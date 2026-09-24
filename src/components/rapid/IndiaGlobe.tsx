@@ -5,6 +5,7 @@ import { Crosshair, Map, Minus, Plus } from 'lucide-react';
 import earthUrl from '../../assets/earth-atmos-2048.jpg';
 import { regions } from './regions';
 import cloudUrl from '../../assets/earth-clouds-1024.png';
+import markerUrl from '../../assets/rapid-marker.png';
 import type { MapFocus } from './RapidMap';
 
 function position(lat: number, lng: number, radius = 1) {
@@ -86,6 +87,8 @@ export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, 
       map: cloudTexture, transparent: true, opacity: 0.3, depthWrite: false, roughness: 1,
     }));
     earthGroup.add(clouds);
+    const markerTexture = new THREE.TextureLoader().load(markerUrl);
+    markerTexture.colorSpace = THREE.SRGBColorSpace;
     const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(1.018, 64, 48), new THREE.ShaderMaterial({
       transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
       vertexShader: 'varying vec3 n; varying vec3 v; void main(){vec4 p=modelViewMatrix*vec4(position,1.0); n=normalize(normalMatrix*normal); v=normalize(-p.xyz); gl_Position=projectionMatrix*p;}',
@@ -105,7 +108,8 @@ export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, 
     const pins = regions.map(region => {
       const point = position(region.lat, region.lng, 1.014);
       const color = disasterColor(region.hazard);
-      const dot = new THREE.Mesh(new THREE.SphereGeometry(0.013, 16, 12), new THREE.MeshBasicMaterial({ color }));
+      const dot = new THREE.Sprite(new THREE.SpriteMaterial({ map: markerTexture, color, transparent: true, depthWrite: false }));
+      dot.scale.setScalar(0.1);
       dot.position.copy(point); dot.userData.region = region;
       const ring = new THREE.Mesh(new THREE.RingGeometry(0.024, 0.028, 40), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }));
       ring.position.copy(point.clone().multiplyScalar(1.003)); ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), point.clone().normalize());
@@ -173,17 +177,17 @@ export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, 
       for (const pin of pins) {
         pin.dot.visible = pin.ring.visible = state.current.hazard === 'All hazards' || pin.region.hazard === state.current.hazard;
         const active = pin.region.id === state.current.selected;
-        pin.dot.scale.setScalar(active ? 1.5 : 1);
+        pin.dot.scale.setScalar(active ? 0.14 : 0.1);
         pin.ring.scale.setScalar(state.current.reducedMotion ? (active ? 1.7 : 1) : 1 + ((time / 2200 + regions.indexOf(pin.region) / 8) % 1) * (active ? 1.5 : 0.9));
       }
       controls.update(); renderer.render(scene, camera); frame = requestAnimationFrame(draw);
     };
     frame = requestAnimationFrame(draw);
     return () => {
-      cancelAnimationFrame(frame); resize.disconnect(); controls.dispose(); texture.dispose(); cloudTexture.dispose();
+      cancelAnimationFrame(frame); resize.disconnect(); controls.dispose(); texture.dispose(); cloudTexture.dispose(); markerTexture.dispose();
       renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointerup', up);
       renderer.domElement.removeEventListener('pointermove', move); renderer.domElement.removeEventListener('pointercancel', cancel);
-      scene.traverse(object => { if (object instanceof THREE.Mesh || object instanceof THREE.Line) { object.geometry.dispose(); const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(material => material.dispose()); } });
+      scene.traverse(object => { if (object instanceof THREE.Mesh || object instanceof THREE.Line) { object.geometry.dispose(); const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(material => material.dispose()); } else if (object instanceof THREE.Sprite) { object.material.dispose(); } });
       renderer.dispose(); renderer.domElement.remove(); actions.current = null;
     };
   }, []);
