@@ -1,6 +1,6 @@
 ﻿import { FormEvent, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Lock, LogIn, User, Waves } from "lucide-react";
+import { Lock, LogIn, User } from "lucide-react";
 
 type LoginPageProps = {
   onLogin: (name: string) => void;
@@ -59,7 +59,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <span aria-hidden="true"><Waves size={22} /></span>
+            <span aria-hidden="true"><img src={`${import.meta.env.BASE_URL}rapid-logo.png`} alt="" /></span>
             <strong>RAPID-AI</strong>
           </motion.div>
 
@@ -69,7 +69,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
           >
-            <Waves size={30} />
+            <img src={`${import.meta.env.BASE_URL}rapid-logo.png`} alt="RAPID-AI logo" />
           </motion.span>
 
           <div className="login-wordmark" aria-label="RAPID-AI">

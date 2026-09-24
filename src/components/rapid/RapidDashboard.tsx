@@ -7,7 +7,7 @@ import './rapid.css';
 import './rapid-day.css';
 
 function Mark({ small = false }: { small?: boolean }) {
-  return <svg className={small ? 'rapid-mark small' : 'rapid-mark'} viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M5 41 24 5l19 36M12 40 24 17l12 23M19 32h10" stroke="currentColor" strokeWidth="2" /><path d="m8 40 16-30 16 30" stroke="currentColor" strokeWidth=".5" /></svg>;
+  return <img className={small ? 'rapid-mark small' : 'rapid-mark'} src={`${import.meta.env.BASE_URL}rapid-logo.png`} alt="" aria-hidden="true" />;
 }
 
 function Sparkline({ values, gold = false }: { values: number[]; gold?: boolean }) {
