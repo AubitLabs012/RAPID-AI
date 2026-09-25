@@ -1,17 +1,23 @@
 import { useEffect } from "react";
+import { SearchOverlay } from "./components/SearchOverlay";
 import { TabBar, ToastHost } from "./components/ui";
-import { useRoute } from "./lib/router";
+import { goBack, navigate, useRoute } from "./lib/router";
 import { applyTheme, settings } from "./lib/storage";
 import { AlertsScreen } from "./screens/AlertsScreen";
 import { AssistantScreen } from "./screens/AssistantScreen";
+import { GlobeScreen } from "./screens/GlobeScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { MapScreen } from "./screens/MapScreen";
 import { MoreScreen } from "./screens/MoreScreen";
 import { PlaceListScreen, InfoScreen, SettingsScreen } from "./screens/MoreSubScreens";
 import { PlaceScreen } from "./screens/PlaceScreen";
+import { RescueScreen, SosScreen } from "./screens/SosScreens";
+import { useEvents } from "./services/events";
 import { ToolsScreen } from "./screens/ToolsScreen";
 
-const TAB_PATHS = ["/", "/map", "/alerts", "/tools", "/more"];
+const TAB_PATHS = ["/", "/map", "/sos", "/alerts", "/more"];
+// Screens that fill the space themselves (dark map / globe); everything else scrolls.
+const FULL_SCREEN = ["/map", "/globe", "/search"];
 
 export default function App() {
   const route = useRoute();
@@ -35,6 +41,10 @@ export default function App() {
   switch (route.path) {
     case "/": screen = <HomeScreen />; break;
     case "/map": screen = <MapScreen />; break;
+    case "/globe": screen = <GlobeScreen />; break;
+    case "/sos": screen = <SosScreen />; break;
+    case "/rescue": screen = <RescueScreen />; break;
+    case "/search": screen = <SearchRoute />; break;
     case "/alerts": screen = <AlertsScreen />; break;
     case "/tools": screen = <ToolsScreen />; break;
     case "/more": screen = <MoreScreen />; break;
@@ -53,7 +63,7 @@ export default function App() {
     <div className="mx-auto flex h-full max-w-[480px] flex-col overflow-hidden bg-bg text-ink shadow-2xl sm:border-x sm:border-line">
       <div className="relative flex min-h-0 flex-1 flex-col">
         {/* Globe and map screens fill the space; other screens scroll. */}
-        {route.path === "/" || route.path === "/map" ? (
+        {FULL_SCREEN.includes(route.path) ? (
           screen
         ) : (
           <main id="screen" className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
@@ -62,7 +72,12 @@ export default function App() {
         )}
         <ToastHost />
       </div>
-      {showTabs && <TabBar active={route.path} />}
+      {showTabs && <TabBar active={route.path} onSearch={route.path === "/" ? () => navigate("/search") : undefined} />}
     </div>
   );
+}
+
+function SearchRoute() {
+  const events = useEvents();
+  return <SearchOverlay events={events.data ?? []} onClose={() => goBack()} />;
 }

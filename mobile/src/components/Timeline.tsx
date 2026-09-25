@@ -60,7 +60,7 @@ export function Timeline({
           }}
           aria-label="Time"
           aria-valuetext={formatValue(value)}
-          className="h-1.5 w-full cursor-pointer accent-blue-600"
+          className="h-1.5 w-full cursor-pointer accent-indigo-500"
         />
         <div className="mt-0.5 flex justify-between text-[11px] font-medium text-slate-600">
           {labels.map((l) => <span key={l}>{l}</span>)}
@@ -74,7 +74,7 @@ export function Timeline({
         }}
         className={cn(
           "shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold",
-          live ? "bg-white text-slate-900 shadow" : "bg-blue-600 text-white",
+          live ? "bg-white text-slate-900 shadow" : "bg-indigo-500 text-white",
         )}
       >
         {live ? "Live" : formatValue(value)}

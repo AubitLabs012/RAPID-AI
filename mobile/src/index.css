@@ -4,38 +4,42 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 /*
-  Theme tokens. List screens (place, alerts, tools, more) follow the Light/Dark setting.
-  The globe and map screens are always dark, like the mockup.
+  Theme tokens: a soft lavender palette. Screens follow the Day/Night setting;
+  the 3D globe and satellite map stay dark.
 */
 :root,
 [data-theme="light"] {
   color-scheme: light;
-  --page: #e9edf3;
-  --bg: #f5f7fb;
+  --page: #ecebf6;
+  --bg: #f6f5fc;
   --surface: #ffffff;
-  --surface-2: #f1f4f9;
-  --line: #e3e8ef;
-  --ink: #0f172a;
-  --ink-2: #334155;
-  --muted: #64748b;
-  --accent: #2563eb;
-  --accent-soft: #e8efff;
-  --shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 4px 16px rgb(15 23 42 / 0.06);
+  --surface-2: #f1effb;
+  --line: #e7e4f4;
+  --ink: #1d1b2f;
+  --ink-2: #3e3a5c;
+  --muted: #7c7896;
+  --accent: #7166e8;
+  --accent-soft: #edeafe;
+  --nav: #8f86ea;
+  --nav-ink: #ffffff;
+  --shadow: 0 1px 2px rgb(49 40 120 / 0.05), 0 6px 18px rgb(49 40 120 / 0.07);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --page: #05080f;
-  --bg: #0b1220;
-  --surface: #121b2d;
-  --surface-2: #19243a;
-  --line: #22304a;
-  --ink: #e8eefb;
-  --ink-2: #c3cee3;
-  --muted: #8a99b5;
-  --accent: #6d9bff;
-  --accent-soft: #1b2a4d;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 20px rgb(0 0 0 / 0.25);
+  --page: #07061a;
+  --bg: #0f0d24;
+  --surface: #1a1735;
+  --surface-2: #231f45;
+  --line: #2e2a55;
+  --ink: #ecebfb;
+  --ink-2: #c9c5ee;
+  --muted: #948fbf;
+  --accent: #9b92ff;
+  --accent-soft: #2b2660;
+  --nav: #5d53c9;
+  --nav-ink: #ffffff;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 20px rgb(0 0 0 / 0.3);
 }
 
 @theme inline {
@@ -49,7 +53,9 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-nav: var(--nav);
+  --color-nav-ink: var(--nav-ink);
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 html,
@@ -71,7 +77,7 @@ body {
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 20px;
   box-shadow: var(--shadow);
 }
 
@@ -128,3 +134,10 @@ body {
 .leaflet-container { font-family: var(--font-sans); background: #0b1220; }
 .leaflet-control-attribution { font-size: 9px; }
 .leaflet-control-zoom { display: none; }
+
+@keyframes sos-ring {
+  0% { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+.sos-ring { animation: sos-ring 1.8s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sos-ring { animation: none; } }

@@ -271,7 +271,7 @@ export const Globe = forwardRef<GlobeHandle, Props>(function Globe({ events, sel
       })}
       {me && (
         <div ref={meRef} className="pointer-events-none absolute top-0 left-0 opacity-0" aria-label="Your location">
-          <span className="block size-4 rounded-full border-[3px] border-white bg-blue-500 shadow-[0_0_0_6px_rgb(59_130_246/0.3)]" />
+          <span className="block size-4 rounded-full border-[3px] border-white bg-indigo-500 shadow-[0_0_0_6px_rgb(59_130_246/0.3)]" />
         </div>
       )}
     </div>

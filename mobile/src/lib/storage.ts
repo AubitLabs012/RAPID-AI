@@ -44,6 +44,8 @@ export const settings = createStore("rapid-mobile-settings", {
   theme: "system" as Theme,
   displayName: "",
   refreshMinutes: 10,
+  // The place the Home screen watches. null = not chosen yet (Home then tries your location).
+  homePlace: null as { name: string; lat: number; lon: number } | null,
 });
 
 export const places = createStore("rapid-mobile-places", {

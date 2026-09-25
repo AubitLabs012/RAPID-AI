@@ -93,6 +93,41 @@ export function useWeather(lat: number | undefined, lon: number | undefined) {
   });
 }
 
+// Current conditions for several places in one request (Open-Meteo accepts comma-separated coordinates).
+export type CityNow = { name: string; lat: number; lon: number; temperature: number; code: number; isDay: boolean; localTime: string; timezone: string };
+
+export async function fetchCitiesNow(cities: { name: string; lat: number; lon: number }[], signal?: AbortSignal): Promise<CityNow[]> {
+  if (!cities.length) return [];
+  const params = new URLSearchParams({
+    latitude: cities.map((c) => c.lat.toFixed(3)).join(","),
+    longitude: cities.map((c) => c.lon.toFixed(3)).join(","),
+    current: "temperature_2m,weather_code,is_day",
+    timezone: "auto",
+  });
+  const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { signal });
+  if (!res.ok) throw new Error(`Weather ${res.status}`);
+  const raw = await res.json();
+  const list = (Array.isArray(raw) ? raw : [raw]) as { timezone: string; timezone_abbreviation: string; current: { time: string; temperature_2m: number; weather_code: number; is_day: number } }[];
+  return list.map((d, i) => ({
+    ...cities[i],
+    temperature: d.current.temperature_2m,
+    code: d.current.weather_code,
+    isDay: d.current.is_day === 1,
+    localTime: d.current.time.slice(11, 16),
+    timezone: d.timezone_abbreviation,
+  }));
+}
+
+export function useCitiesNow(cities: { name: string; lat: number; lon: number }[]) {
+  const refreshMinutes = settings.use().refreshMinutes;
+  return useQuery({
+    queryKey: ["cities-now", cities.map((c) => `${c.lat.toFixed(2)},${c.lon.toFixed(2)}`).join("|")],
+    queryFn: ({ signal }) => fetchCitiesNow(cities, signal),
+    staleTime: refreshMinutes * 60_000,
+    refetchInterval: refreshMinutes * 60_000,
+  });
+}
+
 // WMO weather codes -> words. https://open-meteo.com/en/docs
 const WMO: Record<number, string> = {
   0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast", 45: "Fog", 48: "Rime fog",

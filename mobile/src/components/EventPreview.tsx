@@ -22,7 +22,7 @@ export function EventPreview({ event }: { event: DisasterEvent }) {
         <button
           type="button"
           onClick={() => openPlace({ lat: event.lat, lon: event.lon, name: eventPageName(event), event: event.id })}
-          className="flex items-center justify-center gap-1 rounded-xl bg-blue-600 py-3 text-[14px] font-semibold text-white"
+          className="flex items-center justify-center gap-1 rounded-xl bg-indigo-500 py-3 text-[14px] font-semibold text-white"
         >
           View details <ChevronRight size={16} />
         </button>

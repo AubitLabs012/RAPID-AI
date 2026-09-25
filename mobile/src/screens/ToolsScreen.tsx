@@ -24,7 +24,7 @@ export function ToolsScreen() {
 
   return (
     <div className="pb-6">
-      <ScreenHeader back={false} title="Tools" />
+      <ScreenHeader title="Tools" />
       <div className="space-y-5 px-4">
         <ToolGrid title="For Everyone" tools={everyone} large />
         <ToolGrid title="For Advanced Users" tools={advanced} />

@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { ArrowLeft, Bell, Home, LayoutGrid, Map, Menu, type LucideIcon } from "lucide-react";
+import { ArrowLeft, Home, Map, Search, ShieldPlus, TriangleAlert, UserRound, type LucideIcon } from "lucide-react";
 import { goBack, navigate } from "../lib/router";
 
 export function cn(...classes: (string | false | null | undefined)[]) {
@@ -9,32 +9,45 @@ export function cn(...classes: (string | false | null | undefined)[]) {
 const TABS: { path: string; label: string; Icon: LucideIcon }[] = [
   { path: "/", label: "Home", Icon: Home },
   { path: "/map", label: "Map", Icon: Map },
-  { path: "/alerts", label: "Alerts", Icon: Bell },
-  { path: "/tools", label: "Tools", Icon: LayoutGrid },
-  { path: "/more", label: "More", Icon: Menu },
+  { path: "/sos", label: "SOS", Icon: ShieldPlus },
+  { path: "/alerts", label: "Alerts", Icon: TriangleAlert },
+  { path: "/more", label: "Profile", Icon: UserRound },
 ];
 
-export function TabBar({ active }: { active: string }) {
+// Purple rounded bottom bar. On Home it also carries the search field, like the reference design.
+export function TabBar({ active, onSearch }: { active: string; onSearch?: () => void }) {
   return (
-    <nav
-      aria-label="Main"
-      className="safe-bottom relative z-30 grid shrink-0 grid-cols-5 border-t border-line bg-surface pt-1.5"
-    >
-      {TABS.map(({ path, label, Icon }) => {
-        const isActive = active === path;
-        return (
-          <button
-            key={path}
-            type="button"
-            onClick={() => navigate(path)}
-            aria-current={isActive ? "page" : undefined}
-            className={cn("flex flex-col items-center gap-1 py-1 text-[11px] font-medium", isActive ? "text-accent" : "text-muted")}
-          >
-            <Icon size={22} strokeWidth={isActive ? 2.4 : 1.8} aria-hidden />
-            {label}
-          </button>
-        );
-      })}
+    <nav aria-label="Main" className="safe-bottom relative z-30 shrink-0 rounded-t-[28px] bg-nav px-4 pt-3 text-nav-ink shadow-[0_-6px_20px_rgb(80_70_180/0.18)]">
+      {onSearch && (
+        <button
+          type="button"
+          onClick={onSearch}
+          className="mb-3 flex w-full items-center gap-2.5 rounded-xl bg-white px-3.5 py-3 text-left text-[13px] text-slate-500 shadow-sm"
+        >
+          <Search size={18} aria-hidden />
+          Search Disaster, Location, Status
+        </button>
+      )}
+      <div className="grid grid-cols-5">
+        {TABS.map(({ path, label, Icon }) => {
+          const isActive = active === path;
+          return (
+            <button
+              key={path}
+              type="button"
+              onClick={() => navigate(path)}
+              aria-current={isActive ? "page" : undefined}
+              aria-label={label}
+              className="flex flex-col items-center gap-1 pt-1 pb-1.5"
+            >
+              <span className={cn("grid size-10 place-items-center rounded-2xl", isActive && "bg-white/25")}>
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 1.9} fill={isActive && path === "/" ? "currentColor" : "none"} aria-hidden />
+              </span>
+              <span className={cn("text-[10px]", isActive ? "font-semibold" : "opacity-80")}>{label}</span>
+            </button>
+          );
+        })}
+      </div>
     </nav>
   );
 }
@@ -51,10 +64,10 @@ export function ScreenHeader({
   back?: boolean;
 }) {
   return (
-    <header className="safe-top sticky top-0 z-20 flex items-center gap-2 bg-bg/90 px-3 pb-2 backdrop-blur">
+    <header className="safe-top sticky top-0 z-20 flex items-center gap-3 bg-bg/90 px-4 pb-2 backdrop-blur">
       {back && (
-        <button type="button" onClick={() => goBack()} aria-label="Back" className="grid size-10 place-items-center rounded-full text-ink active:bg-surface-2">
-          <ArrowLeft size={22} />
+        <button type="button" onClick={() => goBack()} aria-label="Back" className="grid size-9 shrink-0 place-items-center rounded-xl bg-accent text-white shadow-sm active:scale-95">
+          <ArrowLeft size={19} />
         </button>
       )}
       <div className={cn("min-w-0 flex-1", !back && "pl-2")}>
@@ -102,7 +115,7 @@ export function Segmented<T extends string>({
               "flex-1 rounded-lg px-2 py-2 text-[13px] font-medium",
               active ? "bg-accent-soft text-accent shadow-sm dark:bg-accent dark:text-white" : dark ? "text-slate-600" : "text-muted",
             )}
-            style={dark && active ? { background: "#dbe7ff", color: "#1d4ed8" } : undefined}
+            style={dark && active ? { background: "#e8e5ff", color: "#5b4fd6" } : undefined}
           >
             {o.label}
           </button>

@@ -4,6 +4,7 @@ import { Empty, IconButton, ScreenHeader, Segmented, Skeleton, cn } from "../com
 import { HAZARDS, HazardIcon, SeverityBadge, hazard, type HazardType } from "../lib/hazards";
 import { INDIA_CENTER, distanceKm, isInIndia, satelliteThumb, timeAgo } from "../lib/geo";
 import { openPlace } from "../lib/router";
+import { settings } from "../lib/storage";
 import { getMyPosition, nameForPosition } from "../services/geocode";
 import { eventPageName, useEvents, type DisasterEvent } from "../services/events";
 
@@ -20,13 +21,13 @@ export function AlertsScreen() {
   const [limit, setLimit] = useState(PAGE);
   const [origin, setOrigin] = useState<{ lat: number; lon: number; name: string; fromDevice: boolean } | null>(null);
 
-  // "Nearby" uses the phone's location; if that is refused we fall back to the centre of India.
+  // "Nearby" uses the phone's location; if that is refused, the place watched on Home, else the centre of India.
   useEffect(() => {
     if (scope !== "nearby" || origin) return;
     let cancelled = false;
     getMyPosition().then(async (pos) => {
       if (cancelled) return;
-      if (!pos) return setOrigin({ ...INDIA_CENTER, fromDevice: false });
+      if (!pos) return setOrigin({ ...(settings.get().homePlace ?? INDIA_CENTER), fromDevice: false });
       setOrigin({ ...pos, name: "your location", fromDevice: true });
       const name = await nameForPosition(pos.lat, pos.lon);
       if (!cancelled) setOrigin({ ...pos, name, fromDevice: true });

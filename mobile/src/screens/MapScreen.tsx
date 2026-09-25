@@ -240,14 +240,15 @@ export function MapScreen() {
           <MapButton label="Show my location" onClick={locate}><Crosshair size={20} /></MapButton>
           <MapButton label="Map layers" onClick={() => setLayersOpen(true)}><Layers size={20} /></MapButton>
           <MapButton label="Full screen" onClick={fullscreen}><Maximize size={19} /></MapButton>
+          <MapButton label="3D globe" onClick={() => navigate("/globe")}><span className="text-[13px] font-bold">3D</span></MapButton>
         </div>
 
         {mode === "cctv" && (
           <div className="absolute inset-x-6 top-24 z-[500] rounded-2xl bg-white p-4 text-center text-slate-900 shadow-xl">
-            <Video size={28} className="mx-auto text-blue-600" />
+            <Video size={28} className="mx-auto text-indigo-500" />
             <p className="mt-2 text-[15px] font-semibold">No camera feeds connected yet</p>
             <p className="mt-1 text-[13px] text-slate-600">Public CCTV and webcam streams will appear here once a camera provider is connected.</p>
-            <button type="button" onClick={() => setMode("satellite")} className="mt-3 rounded-xl bg-blue-600 px-4 py-2 text-[13px] font-semibold text-white">Back to satellite</button>
+            <button type="button" onClick={() => setMode("satellite")} className="mt-3 rounded-xl bg-indigo-500 px-4 py-2 text-[13px] font-semibold text-white">Back to satellite</button>
           </div>
         )}
 
@@ -277,10 +278,10 @@ export function MapScreen() {
                   type="button"
                   onClick={() => { setProduct(p); setDaysAgo(0); setRadarBack(0); setPlaying(false); }}
                   aria-pressed={product === p}
-                  className={`overflow-hidden rounded-xl border-2 text-center ${product === p ? "border-blue-500 bg-blue-500/20" : "border-transparent"}`}
+                  className={`overflow-hidden rounded-xl border-2 text-center ${product === p ? "border-indigo-500 bg-indigo-500/20" : "border-transparent"}`}
                 >
                   <img src={thumbFor(p, radar.data)} alt="" className="aspect-square w-full bg-slate-700 object-cover" />
-                  <span className={`block py-1 text-[11px] font-medium ${product === p ? "text-blue-200" : "text-white"}`}>{PRODUCTS[p].label}</span>
+                  <span className={`block py-1 text-[11px] font-medium ${product === p ? "text-indigo-200" : "text-white"}`}>{PRODUCTS[p].label}</span>
                 </button>
               ))}
             </div>
@@ -296,13 +297,13 @@ export function MapScreen() {
       <Sheet open={layersOpen} onClose={() => setLayersOpen(false)} title="Map layers">
         <label className="flex items-center justify-between border-b border-line py-3 text-[15px]">
           Disaster markers
-          <input type="checkbox" checked={showEvents} onChange={(e) => setShowEvents(e.target.checked)} className="size-5 accent-blue-600" />
+          <input type="checkbox" checked={showEvents} onChange={(e) => setShowEvents(e.target.checked)} className="size-5 accent-indigo-500" />
         </label>
         <label className="flex items-center justify-between border-b border-line py-3 text-[15px]">
           Place names and borders
-          <input type="checkbox" checked={showLabels} onChange={(e) => setShowLabels(e.target.checked)} className="size-5 accent-blue-600" />
+          <input type="checkbox" checked={showLabels} onChange={(e) => setShowLabels(e.target.checked)} className="size-5 accent-indigo-500" />
         </label>
-        <button type="button" onClick={() => { setLayersOpen(false); navigate("/"); }} className="w-full border-b border-line py-3 text-left text-[15px]">Open 3D globe</button>
+        <button type="button" onClick={() => { setLayersOpen(false); navigate("/globe"); }} className="w-full border-b border-line py-3 text-left text-[15px]">Open 3D globe</button>
         <button type="button" onClick={() => comingSoon("Offline maps")} className="w-full py-3 text-left text-[15px]">Download for offline use</button>
         <p className="mt-2 mb-4 text-[12px] text-muted">Markers: USGS earthquakes M4+ and NASA EONET open events. Tap one for details.</p>
       </Sheet>

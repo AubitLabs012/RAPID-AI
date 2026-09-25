@@ -1,4 +1,4 @@
-import { Bell, ChevronRight, Clock, Crown, Download, FileText, HelpCircle, Info, MapPin, Settings, UserRound, type LucideIcon } from "lucide-react";
+import { Bell, Bot, ChevronRight, LayoutGrid, Clock, Crown, Download, FileText, HelpCircle, Info, MapPin, Settings, UserRound, type LucideIcon } from "lucide-react";
 import { ScreenHeader, comingSoon } from "../components/ui";
 import { navigate } from "../lib/router";
 import { places, settings } from "../lib/storage";
@@ -17,6 +17,8 @@ export function MoreScreen() {
     { label: "Offline Maps", Icon: Download, onClick: () => comingSoon("Offline maps") },
   ];
   const secondary: Item[] = [
+    { label: "Tools", Icon: LayoutGrid, onClick: () => navigate("/tools") },
+    { label: "Ask RAPID-AI", Icon: Bot, onClick: () => navigate("/assistant") },
     { label: "Settings", Icon: Settings, onClick: () => navigate("/settings") },
     { label: "Help & Guide", Icon: HelpCircle, onClick: () => navigate("/help") },
     { label: "About RAPID-AI", Icon: Info, onClick: () => navigate("/about") },
@@ -24,7 +26,7 @@ export function MoreScreen() {
 
   return (
     <div className="pb-6">
-      <ScreenHeader back={false} title="More" />
+      <ScreenHeader back={false} title="Profile" />
       <div className="space-y-4 px-4">
         <button type="button" onClick={() => navigate("/settings")} className="card flex w-full items-center gap-4 p-4 text-left">
           <span className="grid size-14 place-items-center rounded-full bg-accent-soft text-accent">

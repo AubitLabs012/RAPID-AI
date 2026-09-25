@@ -30,14 +30,29 @@ export async function nameForPosition(lat: number, lon: number): Promise<string>
   }
 }
 
+// Full street-style address for the SOS screen (BigDataCloud, free client-side endpoint).
+export async function addressForPosition(lat: number, lon: number): Promise<string[]> {
+  try {
+    const params = new URLSearchParams({ latitude: String(lat), longitude: String(lon), localityLanguage: "en" });
+    const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?${params}`);
+    const d = (await res.json()) as { locality?: string; city?: string; principalSubdivision?: string; postcode?: string; countryName?: string };
+    const first = [d.locality, d.city].filter((v, i, a) => v && a.indexOf(v) === i).join(", ");
+    const second = [d.principalSubdivision, d.postcode].filter(Boolean).join(", ");
+    return [first, second, d.countryName ?? ""].filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
 // Ask the phone for its location. Resolves null if the user says no or it times out.
-export function getMyPosition(): Promise<{ lat: number; lon: number } | null> {
+export function getMyPosition(precise = false): Promise<{ lat: number; lon: number } | null> {
   return new Promise((resolve) => {
     if (!("geolocation" in navigator)) return resolve(null);
     navigator.geolocation.getCurrentPosition(
       (p) => resolve({ lat: p.coords.latitude, lon: p.coords.longitude }),
       () => resolve(null),
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 10 * 60_000 },
+      // SOS asks for a fresh, precise fix; everything else is happy with a rough, recent one.
+      precise ? { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 } : { enableHighAccuracy: false, timeout: 10000, maximumAge: 10 * 60_000 },
     );
   });
 }

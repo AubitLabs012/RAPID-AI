@@ -106,6 +106,7 @@ const SOURCES = [
   ["Satellite imagery", "Esri World Imagery, NASA GIBS (MODIS, VIIRS)", "https://www.earthdata.nasa.gov/gibs"],
   ["Rain radar", "RainViewer", "https://www.rainviewer.com/api.html"],
   ["Maps", "Esri, OpenStreetMap, OpenTopoMap", "https://www.openstreetmap.org/copyright"],
+  ["Hospitals and routes", "OpenStreetMap (Overpass API), OSRM", "https://www.openstreetmap.org/copyright"],
 ] as const;
 
 export function InfoScreen({ kind }: { kind: "help" | "about" }) {
