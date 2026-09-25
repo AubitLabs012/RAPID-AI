@@ -32,7 +32,7 @@ class Settings:
 
     allowed_origins = [
         origin.strip()
-        for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:4173,http://127.0.0.1:4173").split(",")
+        for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:4175,http://127.0.0.1:4175").split(",")
         if origin.strip()
     ]
 
@@ -46,7 +46,8 @@ class Settings:
     gemini_api_key = os.getenv("GEMINI_API_KEY", "")
     gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
     groq_api_key = os.getenv("GROQ_API_KEY", "")
-    groq_model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    groq_model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+    groq_vision_model = os.getenv("GROQ_VISION_MODEL", "qwen/qwen3.8-27b")
     openai_api_key = os.getenv("OPENAI_API_KEY", "")
     elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY", "")
     stripe_api_key = os.getenv("STRIPE_API_KEY", "")
@@ -55,6 +56,8 @@ class Settings:
     sentry_dsn = os.getenv("SENTRY_DSN", "")
     earthdata_token = os.getenv("EARTHDATA_TOKEN", "")
     nasa_firms_key = os.getenv("NASA_FIRMS_KEY", "")
+    nasa_api_key = os.getenv("NASA_API_KEY", "")
+    windy_maps_api_key = os.getenv("WINDY_MAPS_API_KEY", "")
     s3_bucket = os.getenv("S3_BUCKET", "")
     s3_endpoint_url = os.getenv("S3_ENDPOINT_URL", "")
     s3_access_key = os.getenv("S3_ACCESS_KEY", "")

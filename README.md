@@ -9,7 +9,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:4173/RAPID-AI/`. `npm run build` produces the static GitHub Pages site. GitHub Pages serves the frontend only; it cannot run the Python API, database, Redis, or object storage.
+Open `http://localhost:4175/RAPID-AI/`. `npm run build` produces the static GitHub Pages site. GitHub Pages serves the frontend only; it cannot run the Python API, database, Redis, or object storage.
 
 ## Assistant and analysis pipeline
 

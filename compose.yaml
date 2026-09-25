@@ -64,7 +64,7 @@ services:
       S3_ACCESS_KEY: ${MINIO_ROOT_USER:-rapidlocal}
       S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-rapid-local-only}
       SCHEDULER_ENABLED: "false"
-      ALLOWED_ORIGINS: http://localhost:4173,http://127.0.0.1:4173
+      ALLOWED_ORIGINS: http://localhost:4175,http://127.0.0.1:4175
     ports:
       - 127.0.0.1:8000:8000
 

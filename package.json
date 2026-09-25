@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 4173",
+    "dev": "vite --host 0.0.0.0 --port 4175",
     "build": "tsc -b && vite build",
-    "preview": "vite preview --host 0.0.0.0 --port 4173"
+    "preview": "vite preview --host 0.0.0.0 --port 4175"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

@@ -16,3 +16,43 @@
 @media(max-width:900px){.rapid-assistant-trigger{justify-content:center;padding:5px 2px}.rapid-assistant-avatar{width:42px;height:39px}.rapid-assistant-avatar img{width:40px;height:35px}.rapid-assistant-trigger-copy,.rapid-assistant-presence{display:none}.rapid-assistant-panel{left:80px;bottom:10px;width:min(390px,calc(100vw - 92px))}}
 @media(max-width:600px){.rapid-assistant-trigger{margin-top:12px}.rapid-assistant-avatar{width:35px;height:34px}.rapid-assistant-avatar img{width:34px;height:30px}.rapid-assistant-panel{left:59px;bottom:8px;width:calc(100vw - 67px);height:min(620px,calc(100dvh - 78px))}}
 @media(prefers-reduced-motion:reduce){.rapid-assistant-avatar,.rapid-assistant-panel{animation:none}}
+.rapid-assistant-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:8px 10px;border-bottom:1px solid #dbe5e7;background:#f2f7f8}.rapid-assistant-tools button{display:flex;align-items:center;justify-content:center;gap:4px;min-width:0;padding:7px 3px;border:1px solid #cbdadd;border-radius:7px;background:#fff;color:#244b55;font:600 10px 'Segoe UI',Arial,sans-serif;cursor:pointer}.rapid-assistant-tools button[aria-pressed=true]{border-color:#07899b;background:#e2f8fa;color:#075e6b}.rapid-assistant-tool-form{display:flex;flex-direction:column;gap:8px;max-height:250px;overflow:auto;padding:11px 13px;border-bottom:1px solid #d5e2e5;background:#f3f8f9}.rapid-assistant-tool-form>strong{color:#183e47;font:700 11px 'Segoe UI',Arial,sans-serif;letter-spacing:.25px}.rapid-assistant-tool-form>p{margin:0;color:#405e65;font:11px/1.5 'Segoe UI',Arial,sans-serif}.rapid-assistant-tool-form textarea,.rapid-assistant-tool-form>label>input,.rapid-assistant-counts input{box-sizing:border-box;width:100%;padding:7px 8px;border:1px solid #bfd0d4;border-radius:6px;background:#fff;color:#1a3036;font:11px 'Segoe UI',Arial,sans-serif}.rapid-assistant-tool-form textarea{min-height:54px;resize:vertical}.rapid-assistant-tool-form>label{display:flex;flex-direction:column;gap:5px;color:#37545a;font:10px 'Segoe UI',Arial,sans-serif}.rapid-assistant-counts{display:grid;grid-template-columns:1fr 1fr;gap:7px}.rapid-assistant-counts label{display:flex;flex-direction:column;gap:4px;color:#426067;font:9px 'Segoe UI',Arial,sans-serif}.rapid-assistant-checks{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px}.rapid-assistant-checks label,.rapid-assistant-safe-check{display:flex;align-items:center;gap:5px;color:#405b61;font:10px 'Segoe UI',Arial,sans-serif}.rapid-assistant-tool-form input[type=checkbox]{accent-color:#0b8494}.rapid-assistant-tool-form>small{color:#6b7f84;font:9px/1.4 'Segoe UI',Arial,sans-serif}.rapid-assistant-action,.rapid-assistant-location-button{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 9px;border:1px solid #0c8191;border-radius:7px;background:#0c8191;color:#fff;font:600 10px 'Segoe UI',Arial,sans-serif;cursor:pointer}.rapid-assistant-location-button{align-self:flex-start;padding:5px 8px;background:#fff;color:#176879}.rapid-assistant-action:disabled{opacity:.55;cursor:wait}.rapid-assistant-message.severity-low{border-left:4px solid #20a965}.rapid-assistant-message.severity-moderate{border-left:4px solid #d9ad16}.rapid-assistant-message.severity-high{border-left:4px solid #ed841e}.rapid-assistant-message.severity-critical{border-left:4px solid #e34242}.rapid-assistant-message.severity-unknown{border-left:4px solid #8d9a9d}
+.rapid-assistant-upload-notice{display:block;padding:4px 14px 0;color:#687e83;font:9px/1.3 'Segoe UI',Arial,sans-serif}
+
+/* Aubit pod assistant avatar: the supplied pod is the body, while the two
+   small cubes provide the green AI status eyes requested for the widget. */
+.rapid-assistant-pod{position:relative;display:block;flex:none;width:100%;height:100%;line-height:0}
+.rapid-assistant-pod img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;filter:drop-shadow(0 2px 4px #0009)}
+.rapid-assistant-eyes{position:absolute;left:50%;top:48%;width:48%;height:22%;display:flex;align-items:center;justify-content:space-between;transform:translate(-50%,-50%);pointer-events:none}
+.rapid-assistant-eyes i{display:block;width:20%;aspect-ratio:1;border:1px solid #b7ffd0;border-radius:1px;background:linear-gradient(135deg,#e4ffe9 0 18%,#52f18d 20% 70%,#0b8e4e 72%);box-shadow:0 0 3px #8cffb0,0 0 9px #25e878,0 0 16px #16c961;opacity:.95;animation:rapidAssistantBlink 3.7s ease-in-out infinite}
+.rapid-assistant-eyes i+ i{animation-delay:.08s}
+.rapid-assistant-trigger:hover .rapid-assistant-eyes i,.rapid-assistant-trigger.active .rapid-assistant-eyes i{box-shadow:0 0 4px #d5ffe0,0 0 12px #25e878,0 0 22px #16c961}
+.rapid-assistant-avatar .rapid-assistant-pod{width:48px;height:39px}
+.rapid-assistant-header .rapid-assistant-pod{width:54px;height:46px}
+@keyframes rapidAssistantBlink{0%,42%,48%,100%{opacity:.95;transform:scaleY(1)}44%,46%{opacity:.08;transform:scaleY(.16)}60%{opacity:.72;transform:scaleY(1)}}
+@media(prefers-reduced-motion:reduce){.rapid-assistant-eyes i{animation:none;opacity:1}}
+@media(max-width:900px){.rapid-assistant-avatar .rapid-assistant-pod{width:40px;height:35px}}
+@media(max-width:600px){.rapid-assistant-avatar .rapid-assistant-pod{width:34px;height:30px}}
+
+/* Keep the conversation readable while the operational tools stay available
+   in a dedicated rail on the right side of the assistant. */
+.rapid-assistant-panel{width:min(670px,calc(100vw - 214px))}
+.rapid-assistant-body{display:grid;grid-template-columns:minmax(0,1fr) 154px;flex:1;min-height:0;overflow:hidden}
+.rapid-assistant-chat{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.rapid-assistant-action-rail{grid-column:2;grid-row:1;min-width:0;overflow:auto;border-left:1px solid #d5e2e5;background:#f2f7f8}
+.rapid-assistant-action-rail .rapid-assistant-tools{grid-template-columns:1fr;gap:6px;padding:10px;border-bottom:1px solid #d5e2e5;background:transparent}
+.rapid-assistant-action-rail .rapid-assistant-tools button{justify-content:flex-start;min-height:38px;padding:8px 9px;font-size:11px}
+.rapid-assistant-action-rail .rapid-assistant-tool-form{max-height:none;padding:10px;border-bottom:1px solid #d5e2e5}
+.rapid-assistant-action-rail .rapid-assistant-tool-form textarea{min-height:90px}
+.rapid-assistant-chat .rapid-assistant-workflow-toggle{flex:none}
+.rapid-assistant-chat .rapid-assistant-compose{flex:none}
+@media(max-width:900px){
+  .rapid-assistant-panel{left:80px;width:min(390px,calc(100vw - 92px))}
+  .rapid-assistant-body{display:flex;flex-direction:column;overflow:hidden}
+  .rapid-assistant-action-rail{order:0;border-left:0;border-bottom:1px solid #d5e2e5;overflow:visible;flex:none}
+  .rapid-assistant-action-rail .rapid-assistant-tools{grid-template-columns:repeat(4,minmax(0,1fr));padding:8px 10px;border-bottom:0}
+  .rapid-assistant-action-rail .rapid-assistant-tools button{justify-content:center;min-height:34px;padding:7px 3px;font-size:10px}
+  .rapid-assistant-action-rail .rapid-assistant-tool-form{max-height:250px;overflow:auto;border-top:1px solid #d5e2e5}
+  .rapid-assistant-chat{order:1;flex:1}
+}
+@media(max-width:600px){.rapid-assistant-panel{left:59px;width:calc(100vw - 67px)}}

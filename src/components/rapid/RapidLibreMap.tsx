@@ -32,10 +32,11 @@ function circle(region: Region) {
   return { type: 'Feature' as const, properties: { color: colors[region.hazard] ?? '#61d7ff' }, geometry: { type: 'Polygon' as const, coordinates: [coordinates] } };
 }
 
-export function RapidLibreMap({ focus, selected, onSelect, onClose, hazard, onHazardChange, markers, onMarkersChange, reducedMotion }: {
+export function RapidLibreMap({ focus, selected, onSelect, onClose, hazard, onHazardChange, markers, onMarkersChange, reducedMotion, route, onClearRoute }: {
   focus: MapFocus; selected: Region; onSelect: (region: Region) => void; onClose: () => void;
   hazard: string; onHazardChange: (hazard: string) => void; markers: boolean;
   onMarkersChange: (enabled: boolean) => void; reducedMotion: boolean;
+  route: [number, number][] | null; onClearRoute: () => void;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LibreMap | null>(null);
@@ -55,13 +56,55 @@ export function RapidLibreMap({ focus, selected, onSelect, onClose, hazard, onHa
     const map = new maplibregl.Map({ container: host.current, style: style('satellite'), center: [initialFocus.current.lng, initialFocus.current.lat],
       zoom: initialFocus.current.region ? 8 : 5, minZoom: 2, maxZoom: 19 });
     mapRef.current = map;
+    const initialCenter: [number, number] = [initialFocus.current.lng, initialFocus.current.lat];
+    const initialZoom = initialFocus.current.region ? 8 : 5;
     map.on('zoomend', () => setZoom(Math.round(map.getZoom() * 10) / 10));
     map.on('error', () => setTileError(true));
     map.on('idle', () => setTileError(false));
-    const observer = new ResizeObserver(() => map.resize()); observer.observe(host.current);
+    // The map lives in a flex stage whose height settles after MapLibre is
+    // created. Without an explicit resize, MapLibre can retain a tiny initial
+    // canvas (for example 72px high) while the visible host is much taller;
+    // markers are then projected against the wrong viewport and appear far
+    // outside their geographic locations.
+    const observer = new ResizeObserver(() => requestAnimationFrame(() => map.resize()));
+    observer.observe(host.current);
+    map.resize();
+    // Re-apply the intended viewport after the style has loaded. This catches
+    // flex layouts that change size during MapLibre initialization and keeps
+    // the geographic projection centered on the requested location.
+    map.once('load', () => requestAnimationFrame(() => {
+      map.resize();
+      map.jumpTo({ center: initialCenter, zoom: initialZoom });
+    }));
     return () => { observer.disconnect(); pins.current.forEach(pin => pin.remove()); pins.current = []; map.remove(); mapRef.current = null; };
   }, []);
-  useEffect(() => { const map = mapRef.current; if (map) { setTileError(false); map.setStyle(style(mode)); } }, [mode]);
+  useEffect(() => { const map = mapRef.current; if (map) { setTileError(false); map.setStyle(style(mode)); requestAnimationFrame(() => requestAnimationFrame(() => map.resize())); } }, [mode]);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const drawRoute = () => {
+      if (!map.isStyleLoaded()) return;
+      const source = map.getSource('rapid-candidate-route') as maplibregl.GeoJSONSource | undefined;
+      if (!route?.length) {
+        if (map.getLayer('rapid-candidate-route-line')) map.removeLayer('rapid-candidate-route-line');
+        if (map.getSource('rapid-candidate-route')) map.removeSource('rapid-candidate-route');
+        return;
+      }
+      const data = { type: 'Feature' as const, properties: {}, geometry: { type: 'LineString' as const, coordinates: route } };
+      if (source) source.setData(data);
+      else {
+        map.addSource('rapid-candidate-route', { type: 'geojson', data });
+        map.addLayer({ id: 'rapid-candidate-route-line', type: 'line', source: 'rapid-candidate-route', paint: {
+          'line-color': '#44e8ff', 'line-width': 5, 'line-opacity': 0.95, 'line-blur': 1.2,
+        } });
+      }
+      const bounds = route.reduce((result, coordinate) => result.extend(coordinate as [number, number]), new maplibregl.LngLatBounds(route[0], route[0]));
+      map.fitBounds(bounds, { padding: 76, maxZoom: 12, duration: reducedMotion ? 0 : 650 });
+    };
+    map.on('style.load', drawRoute);
+    drawRoute();
+    return () => { map.off('style.load', drawRoute); };
+  }, [route, mode, reducedMotion]);
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -94,7 +137,10 @@ export function RapidLibreMap({ focus, selected, onSelect, onClose, hazard, onHa
       image.style.setProperty('--marker-image', art[region.hazard] ? `url(${art[region.hazard]})` : 'none');
       element.append(image);
       element.addEventListener('click', event => { event.stopPropagation(); map.flyTo({ center: [region.lng, region.lat], zoom: Math.max(8, map.getZoom()), duration: reducedMotion ? 0 : 850 }); selectRef.current(region); });
-      pins.current.push(new maplibregl.Marker({ element, anchor: 'bottom' }).setLngLat([region.lng, region.lat]).addTo(map));
+      // Keep MapLibre's geographic anchor fixed. The pin graphic itself must
+      // not scale/translate on selection, or its visible tip drifts from the
+      // projected coordinate while the map is zooming.
+      pins.current.push(new maplibregl.Marker({ element, anchor: 'bottom', pitchAlignment: 'viewport', rotationAlignment: 'viewport' }).setLngLat([region.lng, region.lat]).addTo(map));
     }
     return () => { pins.current.forEach(pin => pin.remove()); pins.current = []; };
   }, [mode, hazard, markers, selected.id, reducedMotion, art]);
@@ -106,7 +152,7 @@ export function RapidLibreMap({ focus, selected, onSelect, onClose, hazard, onHa
   }, [selected, reducedMotion]);
 
   return <section className="rapid-map-view" aria-label="Interactive regional map">
-    <div className="rapid-map-toolbar"><div className="rapid-map-modes" role="group" aria-label="Map mode">{modes.map(({ id, label, icon: Icon }) => <button key={id} aria-pressed={mode === id} onClick={() => setMode(id)}><Icon size={14} />{label}</button>)}</div><button className="rapid-return-globe" onClick={onClose} aria-label="Return to globe"><Globe2 size={16} />Globe</button></div>
+    <div className="rapid-map-toolbar"><div className="rapid-map-modes" role="group" aria-label="Map mode">{modes.map(({ id, label, icon: Icon }) => <button key={id} aria-pressed={mode === id} onClick={() => setMode(id)}><Icon size={14} />{label}</button>)}</div>{route && <button className="rapid-return-globe" onClick={onClearRoute}>Clear route</button>}<button className="rapid-return-globe" onClick={onClose} aria-label="Return to globe"><Globe2 size={16} />Globe</button></div>
     <div className="rapid-map-filters"><label>Hazard <select value={hazard} onChange={event => onHazardChange(event.target.value)}>{['All hazards', 'Cyclone', 'Flood', 'Tsunami', 'Volcanic', 'Earthquake', 'Heatwave', 'Landslide'].map(value => <option key={value}>{value}</option>)}</select></label>{mode !== 'risks' && <label><input type="checkbox" checked={markers} onChange={event => onMarkersChange(event.target.checked)} /> Markers</label>}<span>{mode === 'risks' ? 'Sample risk areas · not forecast boundaries' : 'Select a marker to analyze'}</span></div>
     <div className="rapid-disaster-legend" aria-label="Disaster marker colors"><span><i className="cyclone" /> Cyclone</span><span><i className="flood" /> Flood / Tsunami</span><span><i className="volcanic" /> Volcanic</span><span><i className="earthquake" /> Earthquake</span></div>
     <div className="rapid-map-surface" ref={host} aria-label={`${mode === 'risks' ? 'Risk' : mode} map`} />

@@ -119,7 +119,10 @@ export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, 
       const point = position(region.lat, region.lng, 1.014);
       const color = disasterColor(region.hazard);
       const dot = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, opacity: 0, depthWrite: false }));
-      dot.scale.setScalar(0.1);
+      // The pin tip, rather than the image center, is the geographic point.
+      // Keep that anchor on the surface as the camera rotates or zooms.
+      dot.center.set(0.5, 0);
+      dot.scale.set(0.1, 0.16, 1);
       dot.position.copy(point); dot.userData.region = region;
       const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture, color, transparent: true, opacity: 0.58, blending: THREE.AdditiveBlending, depthWrite: false }));
       glow.scale.setScalar(0.23);
@@ -205,10 +208,13 @@ export function IndiaGlobe({ selected, onOpenMap, markers, grid, reducedMotion, 
       for (const pin of pins) {
         pin.dot.visible = pin.glow.visible = pin.ring.visible = state.current.hazard === 'All hazards' || pin.region.hazard === state.current.hazard;
         const active = pin.region.id === state.current.selected;
-        pin.dot.scale.setScalar(active ? 0.14 : 0.1);
+        // Counter perspective scaling so artwork stays a stable screen size.
+        // Its bottom-center anchor remains fixed to the region coordinate.
+        const zoomScale = camera.position.length() / 3.8;
+        pin.dot.scale.set((active ? 0.14 : 0.1) * zoomScale, (active ? 0.224 : 0.16) * zoomScale, 1);
         pin.glow.material.opacity = active ? 0.82 : 0.55;
-        pin.glow.scale.setScalar(active ? 0.3 : 0.23);
-        pin.ring.scale.setScalar(state.current.reducedMotion ? (active ? 1.7 : 1) : 1 + ((time / 2200 + regions.indexOf(pin.region) / 8) % 1) * (active ? 1.5 : 0.9));
+        pin.glow.scale.setScalar((active ? 0.3 : 0.23) * zoomScale);
+        pin.ring.scale.setScalar(active ? 1.7 : 1);
       }
       controls.update(); renderer.render(scene, camera); frame = requestAnimationFrame(draw);
     };

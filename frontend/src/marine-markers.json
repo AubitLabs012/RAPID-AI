@@ -1,0 +1,152 @@
+[
+  {
+    "id": "sst-chennai-001",
+    "name": "Chennai SST Anomaly",
+    "region": "Bay of Bengal",
+    "layer": "SST",
+    "type": "sst",
+    "lat": 12.85,
+    "lng": 80.27,
+    "summary": "Elevated nearshore surface temperature detected along the Chennai monitoring corridor.",
+    "metrics": {
+      "Temperature": "28.9 C",
+      "Anomaly": "+0.7 C",
+      "Confidence": "91%"
+    }
+  },
+  {
+    "id": "chl-arabian-001",
+    "name": "Arabian Sea Chlorophyll Bloom",
+    "region": "Arabian Sea",
+    "layer": "Chlorophyll",
+    "type": "chlorophyll",
+    "lat": 16.42,
+    "lng": 64.18,
+    "summary": "Satellite-derived chlorophyll concentration indicates a productive bloom front.",
+    "metrics": {
+      "Chlorophyll": "3.1 mg/m3",
+      "Trend": "+12%",
+      "Confidence": "88%"
+    }
+  },
+  {
+    "id": "fish-bengal-001",
+    "name": "Pelagic Fish Aggregation",
+    "region": "Northern Bay of Bengal",
+    "layer": "Fisheries",
+    "type": "fisheries",
+    "lat": 18.67,
+    "lng": 88.72,
+    "summary": "Model predicts a high-probability pelagic aggregation zone over the next 72 hours.",
+    "metrics": {
+      "Abundance": "74/100",
+      "Forecast": "Rising",
+      "Confidence": "86%"
+    }
+  },
+  {
+    "id": "bio-andaman-001",
+    "name": "Andaman Biodiversity Hotspot",
+    "region": "Andaman Sea",
+    "layer": "Biodiversity",
+    "type": "biodiversity",
+    "lat": 11.74,
+    "lng": 92.65,
+    "summary": "Species richness is above seasonal baseline near island reef and mangrove systems.",
+    "metrics": {
+      "Index": "81/100",
+      "Species": "346",
+      "Confidence": "90%"
+    }
+  },
+  {
+    "id": "coral-gbr-001",
+    "name": "Great Barrier Reef Watch",
+    "region": "Coral Sea",
+    "layer": "Coral reefs",
+    "type": "coral",
+    "lat": -18.28,
+    "lng": 147.7,
+    "summary": "Reef watch station reports thermal stress risk across shallow reef flats.",
+    "metrics": {
+      "Bleaching Risk": "High",
+      "Degree Heating": "6.2",
+      "Confidence": "93%"
+    }
+  },
+  {
+    "id": "current-somali-001",
+    "name": "Somali Current Velocity",
+    "region": "Western Indian Ocean",
+    "layer": "Ocean currents",
+    "type": "currents",
+    "lat": 4.8,
+    "lng": 53.9,
+    "summary": "Surface current vectors show strong northeast transport in the monsoon corridor.",
+    "metrics": {
+      "Velocity": "1.2 m/s",
+      "Direction": "NE",
+      "Confidence": "84%"
+    }
+  },
+  {
+    "id": "fish-scs-001",
+    "name": "South China Sea Fisheries Decline",
+    "region": "South China Sea",
+    "layer": "Fisheries",
+    "type": "fisheries",
+    "lat": 13.9,
+    "lng": 113.4,
+    "summary": "Short-term forecast shows reduced catch suitability from warmer mixed-layer conditions.",
+    "metrics": {
+      "Abundance": "42/100",
+      "Forecast": "Declining",
+      "Confidence": "82%"
+    }
+  },
+  {
+    "id": "bio-raja-001",
+    "name": "Raja Ampat Species Signal",
+    "region": "Indonesian Seas",
+    "layer": "Biodiversity",
+    "type": "biodiversity",
+    "lat": -0.48,
+    "lng": 130.92,
+    "summary": "Dense biodiversity signal detected around reef passages and protected lagoon edges.",
+    "metrics": {
+      "Index": "89/100",
+      "Species": "512",
+      "Confidence": "94%"
+    }
+  },
+  {
+    "id": "sst-maldives-001",
+    "name": "Maldives Warm Pool",
+    "region": "Central Indian Ocean",
+    "layer": "SST",
+    "type": "sst",
+    "lat": 3.2,
+    "lng": 73.22,
+    "summary": "Warm pool expansion detected near atoll systems with low wind mixing.",
+    "metrics": {
+      "Temperature": "29.4 C",
+      "Anomaly": "+0.9 C",
+      "Confidence": "87%"
+    }
+  },
+  {
+    "id": "coral-lakshadweep-001",
+    "name": "Lakshadweep Reef Transect",
+    "region": "Lakshadweep Sea",
+    "layer": "Coral reefs",
+    "type": "coral",
+    "lat": 10.57,
+    "lng": 72.64,
+    "summary": "Reef transect reports stable cover with moderate heat stress exposure.",
+    "metrics": {
+      "Reef Cover": "63%",
+      "Bleaching Risk": "Moderate",
+      "Confidence": "85%"
+    }
+  }
+]

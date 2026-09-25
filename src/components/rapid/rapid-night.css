@@ -76,6 +76,22 @@
 .rapid-shell.rapid-day .rapid-live-clock-head>span,.rapid-shell.rapid-day .rapid-live-clock-time strong,.rapid-shell.rapid-day .rapid-live-clock-time span,.rapid-shell.rapid-day .rapid-live-clock-date,.rapid-shell.rapid-day .rapid-live-clock-greeting,.rapid-shell.rapid-day .rapid-live-clock-kicker{color:#17343b;text-shadow:none}
 .rapid-shell.rapid-day .rapid-live-clock-season{border:2px solid #d5b992}
 .rapid-shell.rapid-day .rapid-live-clock-metrics>span{background:#fff;border-color:#cbdadc}
+.rapid-shell:not(.rapid-day) .rapid-live-clock{background:#0b2942!important;color:#f7fbff!important;border:2px solid #d8edff9c!important}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-weather,.rapid-shell:not(.rapid-day) .rapid-live-clock-forecast,.rapid-shell:not(.rapid-day) .rapid-live-clock-daylight{background:linear-gradient(145deg,#174b77ee,#102d48f5)!important;color:#f7fbff!important;border-color:#d5edff8c!important}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-current strong,.rapid-shell:not(.rapid-day) .rapid-live-clock-current strong small,.rapid-shell:not(.rapid-day) .rapid-live-clock-current span,.rapid-shell:not(.rapid-day) .rapid-live-clock-weather>p,.rapid-shell:not(.rapid-day) .rapid-live-clock-forecast h3,.rapid-shell:not(.rapid-day) .rapid-live-clock-hours>div,.rapid-shell:not(.rapid-day) .rapid-live-clock-daylight span,.rapid-shell:not(.rapid-day) .rapid-live-clock-daylight strong{color:#f4faff!important}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-metrics>span{background:none!important;color:#d7edfc!important;border-color:#d9efff55!important}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-metrics small,.rapid-shell:not(.rapid-day) .rapid-live-clock-hours small{color:#bed9eb!important}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-season{background:radial-gradient(circle at 87% 17%,#ffcc6544,transparent 29%),linear-gradient(115deg,#803e318e,#362b31e8 72%,#422b25)!important;border:1px solid #ffd6a888!important}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-season small,.rapid-shell:not(.rapid-day) .rapid-live-clock-season p{color:#ffead9!important}.rapid-shell:not(.rapid-day) .rapid-live-clock-season strong{color:#ffb16e!important}
+.rapid-shell:not(.rapid-day) .rapid-live-clock-daylight>div{border-right-color:#d6eaff55!important}
+.rapid-shell.rapid-day .rapid-live-clock{background:#0b2942!important;color:#f7fbff!important;border:2px solid #d8edff9c!important}
+.rapid-shell.rapid-day .rapid-live-clock-weather,.rapid-shell.rapid-day .rapid-live-clock-forecast,.rapid-shell.rapid-day .rapid-live-clock-daylight{background:linear-gradient(145deg,#2876a9ee,#16466df5)!important;color:#f7fbff!important;border-color:#d5edff8c!important}
+.rapid-shell.rapid-day .rapid-live-clock-current strong,.rapid-shell.rapid-day .rapid-live-clock-current strong small,.rapid-shell.rapid-day .rapid-live-clock-current span,.rapid-shell.rapid-day .rapid-live-clock-weather>p,.rapid-shell.rapid-day .rapid-live-clock-forecast h3,.rapid-shell.rapid-day .rapid-live-clock-hours>div,.rapid-shell.rapid-day .rapid-live-clock-daylight span,.rapid-shell.rapid-day .rapid-live-clock-daylight strong{color:#f4faff!important}
+.rapid-shell.rapid-day .rapid-live-clock-metrics>span{background:none!important;color:#d7edfc!important;border-color:#d9efff55!important}
+.rapid-shell.rapid-day .rapid-live-clock-metrics small,.rapid-shell.rapid-day .rapid-live-clock-hours small{color:#bed9eb!important}
+.rapid-shell.rapid-day .rapid-live-clock-season{background:radial-gradient(circle at 87% 17%,#ffcc6544,transparent 29%),linear-gradient(115deg,#803e318e,#362b31e8 72%,#422b25)!important;border:1px solid #ffd6a888!important}
+.rapid-shell.rapid-day .rapid-live-clock-season small,.rapid-shell.rapid-day .rapid-live-clock-season p{color:#ffead9!important}.rapid-shell.rapid-day .rapid-live-clock-season strong{color:#ffb16e!important}
+.rapid-shell.rapid-day .rapid-live-clock-daylight>div{border-right-color:#d6eaff55!important}
 
 /* Settings readability applies in both modes. */
 .rapid-shell .rapid-settings{width:min(380px,calc(100vw - 95px));font-family:'Segoe UI',Arial,sans-serif;font-size:15px;line-height:1.5}

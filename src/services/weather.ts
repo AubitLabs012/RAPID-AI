@@ -14,7 +14,12 @@ export type WeatherDay = {
   rainSum: number; // mm
   rainChance: number | null; // %
   windMax: number; // km/h
+  sunrise: string;
+  sunset: string;
+  daylightSeconds: number;
 };
+
+export type HourlyWeather = { time: string; label: string; code: number; temperature: number; rainChance: number | null; windSpeed: number };
 
 export type LiveWeather = {
   observedAt: string; // local ISO time of the current reading
@@ -24,28 +29,35 @@ export type LiveWeather = {
   precipitation: number; // mm in the last interval
   windSpeed: number; // km/h
   windGusts: number; // km/h
+  pressure: number | null; // hPa
+  visibility: number | null; // meters
   code: number; // WMO weather code
   isDay: boolean;
   days: WeatherDay[]; // today + next days
+  hours: HourlyWeather[];
 };
 
 type OpenMeteoResponse = {
   current: {
     time: string; temperature_2m: number; apparent_temperature: number; relative_humidity_2m: number;
     precipitation: number; weather_code: number; wind_speed_10m: number; wind_gusts_10m: number; is_day: number;
+    pressure_msl?: number; visibility?: number;
   };
   daily: {
     time: string[]; weather_code: number[]; temperature_2m_max: number[]; temperature_2m_min: number[];
     precipitation_sum: number[]; precipitation_probability_max: (number | null)[]; wind_speed_10m_max: number[];
+    sunrise: string[]; sunset: string[]; daylight_duration: number[];
   };
+  hourly: { time: string[]; temperature_2m: number[]; precipitation_probability: (number | null)[]; weather_code: number[]; wind_speed_10m: number[] };
 };
 
 export async function fetchLiveWeather(lat: number, lng: number, signal?: AbortSignal): Promise<LiveWeather> {
   const params = new URLSearchParams({
     latitude: lat.toFixed(3),
     longitude: lng.toFixed(3),
-    current: 'temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,is_day',
-    daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max',
+    current: 'temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,is_day,pressure_msl,visibility',
+    hourly: 'temperature_2m,precipitation_probability,weather_code,wind_speed_10m',
+    daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset,daylight_duration',
     timezone: 'Asia/Kolkata',
     past_days: '0',
     forecast_days: '4',
@@ -66,9 +78,22 @@ export async function fetchLiveWeather(lat: number, lng: number, signal?: AbortS
       rainSum: d.precipitation_sum[i],
       rainChance: d.precipitation_probability_max[i],
       windMax: d.wind_speed_10m_max[i],
+      sunrise: d.sunrise?.[i] ?? '',
+      sunset: d.sunset?.[i] ?? '',
+      daylightSeconds: d.daylight_duration?.[i] ?? 0,
     }))
     .filter(day => day.date >= today)
     .slice(0, 3);
+  const h = data.hourly;
+  const firstHour = h.time.findIndex(time => time >= c.time.slice(0, 13));
+  const hours = firstHour < 0 ? [] : [0, 3, 6, 9, 12, 15, 18].map(offset => firstHour + offset).filter(index => index < h.time.length).map((index, slot) => {
+    const time = h.time[index];
+    const [localDate, localHour] = time.split('T');
+    const hour = Number(localHour?.slice(0, 2) ?? 0);
+    const parsedTime = new Date(`${localDate}T${String(hour).padStart(2, '0')}:00:00+05:30`);
+    const label = slot === 0 ? 'Now' : new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', hour: 'numeric', hour12: true }).format(parsedTime);
+    return { time, label, code: h.weather_code[index], temperature: h.temperature_2m[index], rainChance: h.precipitation_probability[index], windSpeed: h.wind_speed_10m[index] };
+  });
   return {
     observedAt: c.time,
     temperature: c.temperature_2m,
@@ -77,9 +102,12 @@ export async function fetchLiveWeather(lat: number, lng: number, signal?: AbortS
     precipitation: c.precipitation,
     windSpeed: c.wind_speed_10m,
     windGusts: c.wind_gusts_10m,
+    pressure: c.pressure_msl ?? null,
+    visibility: c.visibility ?? null,
     code: c.weather_code,
     isDay: c.is_day === 1,
     days,
+    hours,
   };
 }
 

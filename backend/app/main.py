@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import ai, assets, auth, game, health, intelligence, live_ocean, marine, prediction_agents, rapid_assistant
+from app.api.routes import ai, assets, auth, game, health, intelligence, live_imagery, live_ocean, live_providers, marine, prediction_agents, rapid_assistant
 from app.config import get_settings
 from app.monitoring.sentry import configure_sentry
 from app.schedulers.daily import start_daily_scheduler, stop_daily_scheduler
@@ -44,6 +44,8 @@ app.include_router(intelligence.router, prefix=settings.api_prefix)
 app.include_router(live_ocean.router, prefix=settings.api_prefix)
 app.include_router(prediction_agents.router, prefix=settings.api_prefix)
 app.include_router(rapid_assistant.router, prefix=settings.api_prefix)
+app.include_router(live_imagery.router, prefix=settings.api_prefix)
+app.include_router(live_providers.router, prefix=settings.api_prefix)
 
 
 @app.on_event("startup")

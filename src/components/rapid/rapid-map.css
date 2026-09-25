@@ -10,6 +10,12 @@
 .rapid-map-filters select{background:#102c33;color:#d6e9e9;border:1px solid #5d9ca26b;padding:5px;font:inherit}
 .rapid-map-filters>span{margin-left:auto;color:#a2bfc4;font-size:9px}
 .rapid-map-surface{flex:1;min-height:0;width:100%;background:#163039;z-index:0}
+/* MapLibre positions the raster canvas absolutely, but its marker container
+   also needs an explicit viewport size inside this flex stage. If it remains
+   an auto-height block, markers are projected against a short header-sized
+   viewport and appear hundreds of kilometres away from the map locations. */
+.rapid-map-surface.maplibregl-map .maplibregl-canvas-container{position:absolute;inset:0;width:100%;height:100%}
+.rapid-map-surface.maplibregl-map .maplibregl-canvas{position:absolute;inset:0;width:100%;height:100%}
 .rapid-map-view .leaflet-control-attribution{background:#ffffffed;color:#182c35;max-width:100%;font-size:9px}
 .rapid-map-view .leaflet-control-attribution a{color:#8cc6ff}
 .rapid-map-zoom{position:absolute;right:14px;bottom:48px;z-index:2;display:flex;flex-direction:column;border:1px solid #6fa8ac;background:#07171df5;box-shadow:0 4px 20px #0005}
@@ -26,8 +32,8 @@
 .rapid-leaflet-pin{background:none;border:0}
 .rapid-map-view .rapid-leaflet-pin{position:relative;width:50px;height:66px;padding:0;cursor:pointer;appearance:none}
 .rapid-map-view .maplibregl-ctrl-attrib{font-size:9px!important;background:#ffffffed!important}
-.rapid-leaflet-pin>span{position:absolute;left:0;top:0;width:50px;height:66px;background:var(--marker-image) center / contain no-repeat;filter:var(--art-filter) var(--pin-filter) drop-shadow(0 0 3px var(--pin-color)) drop-shadow(0 0 8px color-mix(in srgb,var(--pin-color) 72%,transparent)) drop-shadow(0 3px 5px #000b);transform-origin:50% 82%;transition:transform .22s ease,filter .22s ease}
-.rapid-leaflet-pin .selected{transform:scale(1.18);filter:var(--art-filter) var(--pin-filter) drop-shadow(0 0 5px var(--pin-color)) drop-shadow(0 0 13px var(--pin-color))}
+.rapid-leaflet-pin>span{position:absolute;left:0;top:0;width:50px;height:66px;background:var(--marker-image) center / contain no-repeat;filter:var(--art-filter) var(--pin-filter) drop-shadow(0 0 3px var(--pin-color)) drop-shadow(0 0 8px color-mix(in srgb,var(--pin-color) 72%,transparent)) drop-shadow(0 3px 5px #000b);transition:filter .22s ease;pointer-events:none}
+.rapid-leaflet-pin .selected{filter:var(--art-filter) var(--pin-filter) drop-shadow(0 0 5px var(--pin-color)) drop-shadow(0 0 13px var(--pin-color))}
 .rapid-map-error{position:absolute;bottom:28px;left:12px;right:66px;z-index:3;padding:12px;background:#332411f5;border:1px solid #bd944e;color:#ffe0a8;font-size:11px}
 .rapid-map-error button{text-decoration:underline;padding:3px 8px;color:#fff}
 .rapid-day .rapid-map-toolbar,.rapid-day .rapid-map-filters{background:#e5f0f0;color:#16353b}

@@ -1,0 +1,1654 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAPID-AI - Disaster Intelligence</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #03101f;
+        --bg-2: #06182b;
+        --panel: rgba(8, 23, 42, 0.84);
+        --panel-2: rgba(11, 31, 55, 0.74);
+        --glass: rgba(9, 25, 45, 0.72);
+        --line: rgba(124, 211, 255, 0.18);
+        --line-strong: rgba(70, 190, 255, 0.44);
+        --text: #f5fbff;
+        --muted: #9eb5ca;
+        --soft: #6f879d;
+        --blue: #1683ff;
+        --cyan: #26d7ff;
+        --green: #28df78;
+        --purple: #8b5cf6;
+        --orange: #ff8a1f;
+        --red: #ff4444;
+        --yellow: #ffc107;
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+        --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      [data-theme="light"] {
+        color-scheme: light;
+        --bg: #f6fbff;
+        --bg-2: #ffffff;
+        --panel: rgba(255, 255, 255, 0.88);
+        --panel-2: rgba(255, 255, 255, 0.74);
+        --glass: rgba(255, 255, 255, 0.7);
+        --line: rgba(12, 56, 118, 0.13);
+        --line-strong: rgba(0, 93, 255, 0.25);
+        --text: #061846;
+        --muted: #506583;
+        --soft: #71819c;
+        --shadow: 0 22px 60px rgba(10, 45, 94, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+        margin: 0;
+      }
+
+      body {
+        min-width: 1180px;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 80% 2%, rgba(22, 131, 255, 0.22), transparent 28%),
+          radial-gradient(circle at 12% 20%, rgba(38, 215, 255, 0.14), transparent 26%),
+          linear-gradient(145deg, var(--bg), var(--bg-2));
+        color: var(--text);
+        font-family: var(--font);
+      }
+
+      [data-theme="light"] body,
+      body[data-theme="light"] {
+        background:
+          radial-gradient(circle at 80% 0%, rgba(22, 131, 255, 0.11), transparent 30%),
+          radial-gradient(circle at 12% 18%, rgba(38, 215, 255, 0.08), transparent 26%),
+          linear-gradient(145deg, #ffffff 0%, #f5fbff 52%, #eef7ff 100%);
+      }
+
+      body:before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(rgba(128, 215, 255, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(128, 215, 255, 0.035) 1px, transparent 1px);
+        background-size: 44px 44px;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--cyan);
+        outline-offset: 2px;
+      }
+
+      .app {
+        position: relative;
+        display: grid;
+        grid-template-columns: 250px minmax(740px, 1fr) 350px;
+        grid-template-rows: 74px 116px minmax(410px, 1fr) 194px;
+        gap: 12px;
+        height: 100vh;
+        padding: 14px;
+      }
+
+      .glass {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, var(--panel), var(--panel-2)),
+          rgba(255, 255, 255, 0.02);
+        box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(20px) saturate(1.24);
+      }
+
+      .sidebar {
+        grid-row: 1 / 5;
+        display: flex;
+        min-height: 0;
+        flex-direction: column;
+        padding: 18px 14px;
+      }
+
+      .brand {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 22px;
+      }
+
+      .logo {
+        position: relative;
+        display: grid;
+        width: 50px;
+        height: 50px;
+        place-items: center;
+        overflow: hidden;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #1299ff, #0a3f9d);
+        box-shadow: 0 0 28px rgba(22, 131, 255, 0.42);
+      }
+
+      .logo:before,
+      .logo:after {
+        content: "";
+        position: absolute;
+        width: 64px;
+        height: 22px;
+        border-radius: 50%;
+        border: 6px solid rgba(255, 255, 255, 0.9);
+        border-top: 0;
+        transform: rotate(-7deg);
+      }
+
+      .logo:before {
+        top: 15px;
+        left: -12px;
+      }
+
+      .logo:after {
+        top: 24px;
+        left: 8px;
+        opacity: 0.68;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 24px;
+        letter-spacing: 0;
+      }
+
+      .brand h1 span {
+        color: var(--cyan);
+      }
+
+      .brand p {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .nav {
+        display: grid;
+        gap: 8px;
+      }
+
+      .nav button,
+      .icon-button,
+      .ghost,
+      .send {
+        border: 1px solid transparent;
+        color: var(--text);
+        background: transparent;
+      }
+
+      .nav button {
+        display: flex;
+        min-height: 44px;
+        align-items: center;
+        gap: 12px;
+        border-radius: 8px;
+        padding: 0 12px;
+        color: var(--text);
+        text-align: left;
+      }
+
+      .nav button.active,
+      .nav button:hover {
+        border-color: var(--line-strong);
+        background: linear-gradient(90deg, rgba(22, 131, 255, 0.82), rgba(22, 131, 255, 0.22));
+        color: #ffffff;
+      }
+
+      [data-theme="light"] .nav button.active,
+      [data-theme="light"] .nav button:hover {
+        background: linear-gradient(90deg, #dfeeff, rgba(0, 93, 255, 0.08));
+        color: #005bff;
+      }
+
+      .nav svg,
+      .top-icon svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        stroke-width: 1.9;
+        fill: none;
+      }
+
+      .status {
+        margin-top: auto;
+        padding: 16px;
+      }
+
+      .status h2,
+      .section-title {
+        margin: 0;
+        font-size: 15px;
+        letter-spacing: 0;
+      }
+
+      .ok {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 12px 0;
+        color: var(--green);
+        font-size: 12px;
+      }
+
+      .ok:before,
+      .online:before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 12px var(--green);
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid var(--line);
+        padding: 10px 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .stat-row strong {
+        color: var(--text);
+      }
+
+      .pipeline {
+        display: grid;
+        gap: 7px;
+        margin-top: 12px;
+      }
+
+      .pipeline span {
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: rgba(22, 131, 255, 0.08);
+        padding: 7px 9px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .topbar {
+        grid-column: 2 / 4;
+        display: grid;
+        grid-template-columns: minmax(420px, 1fr) auto auto auto auto;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .search {
+        position: relative;
+      }
+
+      .search svg {
+        position: absolute;
+        left: 16px;
+        top: 16px;
+        width: 20px;
+        height: 20px;
+        stroke: var(--muted);
+      }
+
+      .search input {
+        width: 100%;
+        height: 52px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--glass);
+        color: var(--text);
+        padding: 0 48px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+
+      .search input::placeholder {
+        color: var(--muted);
+      }
+
+      .top-pill,
+      .theme-switch {
+        display: inline-flex;
+        min-height: 50px;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--glass);
+        padding: 0 14px;
+        color: var(--text);
+      }
+
+      .top-pill small {
+        color: var(--muted);
+      }
+
+      .top-icon {
+        position: relative;
+        display: grid;
+        width: 46px;
+        min-height: 46px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: var(--glass);
+        color: var(--text);
+      }
+
+      .top-icon b {
+        position: absolute;
+        right: -2px;
+        top: -3px;
+        display: grid;
+        width: 18px;
+        height: 18px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--red);
+        color: #ffffff;
+        font-size: 10px;
+      }
+
+      .avatar {
+        background: linear-gradient(145deg, #1f6fff, #1739a7);
+        color: #ffffff;
+        font-weight: 800;
+      }
+
+      .theme-switch {
+        padding: 5px;
+      }
+
+      .theme-switch button {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        background: transparent;
+        color: var(--muted);
+      }
+
+      .theme-switch button.active {
+        border-color: var(--line-strong);
+        background: rgba(22, 131, 255, 0.16);
+        color: var(--blue);
+      }
+
+      .sun,
+      .moon {
+        position: relative;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+      }
+
+      .sun {
+        background: #ffb020;
+        box-shadow: 0 0 0 4px rgba(255, 176, 32, 0.18);
+      }
+
+      .moon {
+        background: #dcecff;
+        box-shadow: inset -6px 0 0 #4767cc;
+      }
+
+      .kpis {
+        grid-column: 2 / 4;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .kpi {
+        position: relative;
+        overflow: hidden;
+        min-height: 118px;
+        padding: 16px;
+        cursor: pointer;
+      }
+
+      .kpi:before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        opacity: 0.8;
+      }
+
+      .kpi-head {
+        display: grid;
+        grid-template-columns: 38px minmax(0, 1fr);
+        align-items: start;
+        gap: 10px;
+      }
+
+      .kpi h3 {
+        margin: 0 0 8px;
+        font-size: 13px;
+      }
+
+      .kpi-icon {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--accent), transparent 84%);
+        color: var(--accent);
+        font-weight: 900;
+      }
+
+      .kpi-value {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .kpi-value small {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .trend {
+        color: var(--green);
+        font-size: 12px;
+      }
+
+      .spark {
+        position: absolute;
+        right: 12px;
+        bottom: 8px;
+        width: 78px;
+        height: 36px;
+      }
+
+      .map-card {
+        grid-column: 2 / 3;
+        grid-row: 3 / 4;
+        position: relative;
+        min-height: 0;
+        overflow: hidden;
+        border-color: rgba(42, 179, 255, 0.34);
+      }
+
+      #map {
+        position: absolute;
+        inset: 0;
+        background: #0b2c4e;
+      }
+
+      .map-card:after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 450;
+        pointer-events: none;
+        box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.16);
+      }
+
+      .thermal {
+        position: absolute;
+        inset: 0;
+        z-index: 420;
+        pointer-events: none;
+        opacity: 0.7;
+        mix-blend-mode: screen;
+        background:
+          radial-gradient(ellipse at 11% 61%, rgba(255, 68, 68, 0.8), transparent 9%),
+          radial-gradient(ellipse at 80% 52%, rgba(255, 68, 68, 0.82), transparent 13%),
+          radial-gradient(ellipse at 44% 41%, rgba(40, 223, 120, 0.62), transparent 18%),
+          linear-gradient(92deg, rgba(0, 100, 255, 0.2), rgba(38, 215, 255, 0.46), rgba(255, 211, 56, 0.64), rgba(255, 103, 0, 0.44), rgba(0, 130, 255, 0.2));
+        filter: blur(9px) saturate(1.35);
+      }
+
+      [data-theme="light"] .thermal {
+        opacity: 0.56;
+        mix-blend-mode: multiply;
+      }
+
+      .currents {
+        position: absolute;
+        inset: 0;
+        z-index: 430;
+        display: none;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .current-line {
+        position: absolute;
+        width: 180px;
+        height: 2px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, transparent, rgba(38, 215, 255, 0.9), transparent);
+        transform: rotate(var(--angle));
+        animation: drift 5.8s linear infinite;
+      }
+
+      @keyframes drift {
+        from {
+          translate: -60px 0;
+          opacity: 0;
+        }
+        22%,
+        74% {
+          opacity: 1;
+        }
+        to {
+          translate: 72px 0;
+          opacity: 0;
+        }
+      }
+
+      .map-tools,
+      .layers,
+      .map-legend,
+      .coords {
+        position: absolute;
+        z-index: 500;
+      }
+
+      .map-tools {
+        left: 12px;
+        top: 12px;
+        display: grid;
+        overflow: hidden;
+      }
+
+      .map-tools button {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--text);
+        font-size: 21px;
+      }
+
+      .map-tools button:last-child {
+        border-bottom: 0;
+      }
+
+      .layers {
+        left: 64px;
+        top: 12px;
+        width: 220px;
+        padding: 12px;
+      }
+
+      .layers header,
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .layer {
+        display: grid;
+        grid-template-columns: 18px 1fr 34px;
+        align-items: center;
+        gap: 8px;
+        min-height: 32px;
+        color: var(--text);
+        font-size: 12px;
+      }
+
+      .layer input {
+        accent-color: var(--blue);
+      }
+
+      .swatch {
+        height: 4px;
+        border-radius: 99px;
+        background: var(--accent);
+        box-shadow: 0 0 14px var(--accent);
+      }
+
+      .base-switch {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .base-switch button,
+      .ghost,
+      .send {
+        min-height: 34px;
+        border-radius: 8px;
+        border-color: var(--line);
+        background: rgba(22, 131, 255, 0.08);
+      }
+
+      .base-switch button.active {
+        border-color: var(--line-strong);
+        background: rgba(22, 131, 255, 0.2);
+        color: var(--blue);
+        font-weight: 800;
+      }
+
+      .map-legend {
+        left: 18px;
+        bottom: 18px;
+        width: 250px;
+        padding: 12px;
+      }
+
+      .map-legend h3 {
+        margin: 0 0 10px;
+        font-size: 13px;
+      }
+
+      .scale {
+        height: 12px;
+        border-radius: 99px;
+        background: linear-gradient(90deg, #3f40ff, #00b5ff, #36df7e, #ffd43b, #ff4d1f);
+      }
+
+      .scale-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .coords {
+        right: 16px;
+        bottom: 18px;
+        border-radius: 8px;
+        background: rgba(4, 14, 29, 0.78);
+        padding: 9px 14px;
+        color: #ffffff;
+        font-size: 12px;
+      }
+
+      [data-theme="light"] .coords {
+        background: rgba(255, 255, 255, 0.84);
+        color: var(--text);
+      }
+
+      .map-loading {
+        position: absolute;
+        inset: 0;
+        z-index: 600;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(145deg, #08213e, #09365c);
+        color: #dff7ff;
+      }
+
+      .leaflet-control-container {
+        display: none;
+      }
+
+      .leaflet-container {
+        font-family: var(--font);
+      }
+
+      #map .leaflet-tile-pane {
+        filter: saturate(1.14) contrast(1.05);
+      }
+
+      [data-theme="light"] #map .leaflet-tile-pane {
+        filter: saturate(1.08) contrast(1.02) brightness(1.06);
+      }
+
+      .marker-dot {
+        display: block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent), transparent 78%), 0 0 18px var(--accent);
+      }
+
+      .marine-marker {
+        background: transparent;
+        border: 0;
+      }
+
+      .marine-cluster {
+        display: grid;
+        place-items: center;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #26d7ff, #1683ff);
+        box-shadow: 0 0 0 8px rgba(38, 215, 255, 0.2), 0 0 24px rgba(22, 131, 255, 0.55);
+        color: #ffffff;
+        font-weight: 900;
+      }
+
+      .leaflet-popup-content-wrapper {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        color: var(--text);
+        box-shadow: var(--shadow);
+      }
+
+      .leaflet-popup-tip {
+        background: var(--panel);
+      }
+
+      .right {
+        grid-column: 3 / 4;
+        grid-row: 3 / 4;
+        display: grid;
+        grid-template-rows: minmax(200px, 1fr) auto;
+        gap: 12px;
+        min-height: 0;
+      }
+
+      .alerts {
+        min-height: 0;
+        padding: 16px;
+      }
+
+      .maris-logo-icon {
+        display: grid;
+        place-items: center;
+        justify-self: end;
+        width: 58px;
+        height: 58px;
+        border: 1px solid rgba(125, 218, 255, 0.35);
+        border-radius: 50%;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .maris-logo-icon .logo {
+        width: 50px;
+        height: 50px;
+      }
+
+      .marine-chat-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 80;
+        display: grid;
+        place-items: end;
+        padding: 24px;
+        background: rgba(2, 8, 16, 0.48);
+        backdrop-filter: blur(8px);
+      }
+
+      .marine-chat-backdrop[hidden] {
+        display: none;
+      }
+
+      .marine-chat-window {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        width: min(440px, calc(100vw - 32px));
+        height: min(640px, calc(100vh - 48px));
+        overflow: hidden;
+        border: 1px solid rgba(139, 185, 224, 0.22);
+        border-radius: 8px;
+        background: rgba(7, 18, 32, 0.96);
+        box-shadow: 0 28px 80px rgba(0, 6, 14, 0.58);
+      }
+
+      .marine-chat-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 38px;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(17, 35, 56, 0.72);
+      }
+
+      .marine-chat-header h2,
+      .marine-chat-header p,
+      .marine-chat-message p {
+        margin: 0;
+      }
+
+      .marine-chat-header p {
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .marine-chat-close,
+      .marine-chat-input button {
+        border: 0;
+        color: var(--text);
+      }
+
+      .marine-chat-close {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .marine-chat-messages {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 0;
+        padding: 18px 14px;
+        overflow-y: auto;
+      }
+
+      .marine-chat-message {
+        max-width: 86%;
+      }
+
+      .marine-chat-message p {
+        padding: 12px 14px;
+        border: 1px solid rgba(151, 197, 237, 0.14);
+        border-radius: 8px;
+        line-height: 1.45;
+        font-size: 14px;
+      }
+
+      .marine-chat-message.assistant {
+        align-self: flex-start;
+      }
+
+      .marine-chat-message.assistant p {
+        background: rgba(45, 67, 99, 0.52);
+      }
+
+      .marine-chat-message.user {
+        align-self: flex-end;
+      }
+
+      .marine-chat-message.user p {
+        border-color: rgba(57, 216, 255, 0.28);
+        background: rgba(42, 157, 244, 0.28);
+      }
+
+      .marine-chat-input {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 42px;
+        gap: 10px;
+        padding: 12px 14px 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .marine-chat-input input {
+        min-width: 0;
+        height: 44px;
+        border: 1px solid rgba(139, 185, 224, 0.2);
+        border-radius: 8px;
+        outline: 0;
+        padding: 0 13px;
+        background: rgba(17, 35, 56, 0.78);
+        color: var(--text);
+      }
+
+      .marine-chat-input button {
+        border-radius: 50%;
+        background: #1683ff;
+      }
+
+      .alert-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .alert {
+        display: grid;
+        grid-template-columns: 12px 1fr auto;
+        gap: 12px;
+        align-items: start;
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 12px var(--accent);
+        margin-top: 3px;
+      }
+
+      .alert strong {
+        display: block;
+        font-size: 13px;
+      }
+
+      .alert small,
+      .time {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .online {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--green);
+        font-size: 12px;
+      }
+
+      .message {
+        display: grid;
+        grid-template-columns: 38px 1fr;
+        gap: 10px;
+        margin: 14px 0;
+      }
+
+      .message-bubble {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(22, 131, 255, 0.08);
+        padding: 12px;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .quick {
+        display: grid;
+        gap: 10px;
+        margin-left: 48px;
+      }
+
+      .quick button {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--glass);
+        color: var(--text);
+        padding: 10px 14px;
+      }
+
+      .chat {
+        display: grid;
+        grid-template-columns: 1fr 42px;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .chat input {
+        min-width: 0;
+        height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--glass);
+        color: var(--text);
+        padding: 0 12px;
+      }
+
+      .send {
+        color: var(--blue);
+        font-weight: 800;
+      }
+
+      .analytics {
+        grid-column: 2 / 4;
+        grid-row: 4 / 5;
+        display: grid;
+        grid-template-columns: 1.16fr 1fr 1.05fr;
+        gap: 12px;
+        min-height: 0;
+      }
+
+      .analytics-card {
+        min-width: 0;
+        padding: 16px;
+      }
+
+      .chart {
+        width: 100%;
+        height: 112px;
+      }
+
+      .species {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      .species-card {
+        min-height: 116px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 20, 42, 0.82)),
+          var(--image);
+        background-size: cover;
+        background-position: center;
+        padding: 62px 12px 10px;
+        color: #ffffff;
+      }
+
+      .species-card strong {
+        display: block;
+      }
+
+      .species-card small {
+        color: rgba(255, 255, 255, 0.82);
+      }
+
+      .drawer {
+        position: absolute;
+        z-index: 700;
+        right: 16px;
+        top: 92px;
+        width: 310px;
+        transform: translateX(340px);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 220ms ease, opacity 220ms ease;
+        padding: 16px;
+      }
+
+      .drawer.open {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .drawer button {
+        float: right;
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--glass);
+        color: var(--text);
+      }
+
+      .drawer h2 {
+        margin: 24px 0 8px;
+        font-size: 20px;
+      }
+
+      .drawer p {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .drawer-row {
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid var(--line);
+        padding: 10px 0;
+        color: var(--muted);
+      }
+
+      .drawer-row strong {
+        color: var(--text);
+      }
+
+      @media (max-width: 1280px) {
+        body {
+          min-width: 980px;
+          overflow: auto;
+        }
+
+        .app {
+          height: auto;
+          min-height: 100vh;
+          grid-template-columns: 220px minmax(680px, 1fr);
+          grid-template-rows: 74px auto 520px auto auto;
+        }
+
+        .topbar,
+        .kpis,
+        .analytics {
+          grid-column: 2 / 3;
+        }
+
+        .kpis {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .right {
+          grid-column: 2 / 3;
+          grid-row: 4 / 5;
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: none;
+        }
+
+        .analytics {
+          grid-row: 5 / 6;
+        }
+      }
+    </style>
+  </head>
+  <body data-theme="dark">
+    <main class="app">
+      <aside class="sidebar glass">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>RAPID-<span>AI</span></h1>
+            <p>Disaster Intelligence for a<br />Sustainable Ocean</p>
+          </div>
+        </div>
+        <nav class="nav" id="nav"></nav>
+        <section class="status glass">
+          <h2>System Status</h2>
+          <div class="ok" id="apiState">Connecting to FastAPI</div>
+          <div class="stat-row"><span>Data Sources</span><strong>24</strong></div>
+          <div class="stat-row"><span>AI Models</span><strong>8</strong></div>
+          <div class="stat-row"><span>Last Updated</span><strong id="updatedAt">2 min ago</strong></div>
+          <div class="pipeline" aria-label="Application architecture">
+            <span>HTML + CSS + JavaScript</span>
+            <span>fetch() to FastAPI</span>
+            <span>Python analytics / ML</span>
+            <span>PostgreSQL + PostGIS</span>
+          </div>
+        </section>
+      </aside>
+
+      <header class="topbar">
+        <label class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16 16 5 5"></path></svg>
+          <input id="search" type="search" placeholder="Search location, species, region..." />
+        </label>
+        <div class="theme-switch glass" aria-label="Theme mode">
+          <button id="sunMode" type="button" title="White mode"><span class="sun"></span></button>
+          <button id="moonMode" class="active" type="button" title="Night mode"><span class="moon"></span></button>
+        </div>
+        <div class="top-pill glass">
+          <span class="top-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg></span>
+          <strong>May 26, 2025</strong>
+        </div>
+        <div class="top-icon glass"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg><b>3</b></div>
+        <div class="top-icon glass"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg></div>
+        <div class="top-icon avatar">A</div>
+      </header>
+
+      <section class="kpis" id="kpis"></section>
+
+      <section class="map-card glass">
+        <div id="map"></div>
+        <div class="thermal" id="thermal"></div>
+        <div class="currents" id="currents"></div>
+        <div class="map-loading" id="mapLoading">Loading marine explorer...</div>
+
+        <div class="map-tools glass">
+          <button id="zoomIn" type="button" aria-label="Zoom in">+</button>
+          <button id="zoomOut" type="button" aria-label="Zoom out">-</button>
+          <button id="fitMap" type="button" aria-label="Fit markers">o</button>
+          <button id="refreshMarkers" type="button" aria-label="Refresh API">R</button>
+        </div>
+
+        <aside class="layers glass">
+          <header>
+            <strong>Layers</strong>
+            <small id="markerCount">0 markers</small>
+          </header>
+          <div id="layerList"></div>
+          <div class="base-switch">
+            <button class="active" id="satelliteMode" type="button">Satellite</button>
+            <button id="normalMode" type="button">Normal</button>
+          </div>
+        </aside>
+
+        <div class="map-legend glass">
+          <h3>Sea Surface Temperature (C)</h3>
+          <div class="scale"></div>
+          <div class="scale-labels"><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span></div>
+        </div>
+
+        <div class="coords" id="coords">Lat: 12.85 N&nbsp;&nbsp;&nbsp;Lon: 80.27 E</div>
+
+        <aside class="drawer glass" id="drawer">
+          <button id="closeDrawer" type="button" aria-label="Close">X</button>
+          <h2 id="drawerTitle">Select a marker</h2>
+          <p id="drawerText">Click any marine marker to inspect live API data, modeled risk, and geospatial metrics.</p>
+          <div class="drawer-row"><span>Layer</span><strong id="drawerLayer">--</strong></div>
+          <div class="drawer-row"><span>Region</span><strong id="drawerRegion">--</strong></div>
+          <div class="drawer-row"><span>Confidence</span><strong id="drawerConfidence">--</strong></div>
+        </aside>
+      </section>
+
+      <aside class="right">
+        <section class="alerts glass">
+          <div class="panel-head">
+            <h2 class="section-title">Alerts (7)</h2>
+            <button class="ghost" type="button">View all</button>
+          </div>
+          <div class="alert-list" id="alerts"></div>
+        </section>
+
+        <button class="maris-logo-icon" id="openMarineChat" type="button" aria-label="Open RAPID-AI chat">
+          <div class="logo" aria-hidden="true"></div>
+        </button>
+      </aside>
+
+      <section class="analytics">
+        <article class="analytics-card glass">
+          <div class="panel-head"><h2 class="section-title">Fish Abundance Prediction</h2><small>Next 7 days</small></div>
+          <div class="chart" id="fishChart"></div>
+        </article>
+        <article class="analytics-card glass">
+          <div class="panel-head"><h2 class="section-title">Biodiversity Distribution</h2><button class="ghost" type="button">View all</button></div>
+          <div class="chart" id="bioChart"></div>
+        </article>
+        <article class="analytics-card glass">
+          <div class="panel-head"><h2 class="section-title">Ocean Health Score Over Time</h2><small>6 months</small></div>
+          <div class="chart" id="healthChart"></div>
+        </article>
+      </section>
+    </main>
+
+    <div class="marine-chat-backdrop" id="marineChat" role="dialog" aria-modal="true" aria-label="RAPID-AI marine life chat" hidden>
+      <section class="marine-chat-window">
+        <header class="marine-chat-header">
+          <div>
+            <h2>RAPID-AI</h2>
+            <p>Marine life assistant</p>
+          </div>
+          <button class="marine-chat-close" id="closeMarineChat" type="button" aria-label="Close chat">X</button>
+        </header>
+        <div class="marine-chat-messages" id="marineChatMessages">
+          <article class="marine-chat-message assistant"><p>Hello. I am RAPID-AI. Ask me about marine life, biodiversity, coral reefs, sea temperature, chlorophyll, or ocean health.</p></article>
+        </div>
+        <form class="marine-chat-input" id="marineChatForm">
+          <input id="marineChatInput" placeholder="Ask about marine life..." aria-label="Ask RAPID-AI" />
+          <button type="submit" aria-label="Send message">Go</button>
+        </form>
+      </section>
+    </div>
+
+    <script>
+      const API_BASES = ["http://localhost:8000/api/marine", "/api/marine"];
+      const layerDefs = [
+        { id: "sst", label: "SST", color: "#ff4444", checked: true },
+        { id: "chlorophyll", label: "Chlorophyll", color: "#28df78", checked: true },
+        { id: "fisheries", label: "Fisheries", color: "#1683ff", checked: true },
+        { id: "biodiversity", label: "Biodiversity", color: "#8b5cf6", checked: true },
+        { id: "coral", label: "Coral reefs", color: "#ff4fc3", checked: true },
+        { id: "currents", label: "Ocean currents", color: "#26d7ff", checked: false }
+      ];
+
+      const fallbackKpis = [
+        { label: "Sea Surface Temp.", description: "Showing live sea surface temp of selected area." },
+        { label: "Chlorophyll Avg.", description: "Chlorophyll average is a proxy for phytoplankton biomass in water." },
+        { label: "Biodiversity Index", description: "A marine biodiversity index summarizes the variety and relative abundance of marine life in a defined ocean area or time period." },
+        { label: "Ocean Health Score", description: "A composite metric that quantifies how well an ocean or coastal area is delivering benefits to people now." },
+        { label: "Ocean Currents", description: "Showing live current flow, direction, and movement patterns for the selected area." }
+      ];
+
+      const fallbackAnalytics = {
+        fish_abundance: [52, 48, 58, 62, 56, 50, 61, 72, 81, 67, 77, 58, 66, 68],
+        ocean_health: [50, 38, 47, 60, 72, 58, 44, 32, 48, 69, 74, 71, 52, 63],
+        biodiversity: { "Coral Species": 72, "Fish Species": 68, Mammals: 64, Mollusks: 58 },
+        alerts: { High: 2, Medium: 3, Low: 2 }
+      };
+
+      const fallbackMarkers = [
+        { id: "sst-chennai-001", name: "Chennai SST Anomaly", region: "Bay of Bengal", layer: "SST", type: "sst", lat: 12.85, lng: 80.27, summary: "Elevated nearshore surface temperature detected along the Chennai monitoring corridor.", metrics: { Confidence: "91%" } },
+        { id: "chl-arabian-001", name: "Arabian Sea Chlorophyll Bloom", region: "Arabian Sea", layer: "Chlorophyll", type: "chlorophyll", lat: 16.42, lng: 64.18, summary: "Satellite-derived chlorophyll concentration indicates a productive bloom front.", metrics: { Confidence: "88%" } },
+        { id: "fish-bengal-001", name: "Pelagic Fish Aggregation", region: "Northern Bay of Bengal", layer: "Fisheries", type: "fisheries", lat: 18.67, lng: 88.72, summary: "Model predicts a high-probability pelagic aggregation zone over the next 72 hours.", metrics: { Confidence: "86%" } },
+        { id: "bio-andaman-001", name: "Andaman Biodiversity Hotspot", region: "Andaman Sea", layer: "Biodiversity", type: "biodiversity", lat: 11.74, lng: 92.65, summary: "Species richness is above seasonal baseline near island reef and mangrove systems.", metrics: { Confidence: "90%" } },
+        { id: "coral-gbr-001", name: "Great Barrier Reef Watch", region: "Coral Sea", layer: "Coral reefs", type: "coral", lat: -18.28, lng: 147.7, summary: "Reef watch station reports thermal stress risk across shallow reef flats.", metrics: { Confidence: "93%" } },
+        { id: "current-somali-001", name: "Somali Current Velocity", region: "Western Indian Ocean", layer: "Ocean currents", type: "currents", lat: 4.8, lng: 53.9, summary: "Surface current vectors show strong northeast transport in the monsoon corridor.", metrics: { Confidence: "84%" } }
+      ];
+
+      const alerts = [
+        ["Coral Bleaching Risk - HIGH", "Great Barrier Reef, Australia", "2h ago", "#ff4444"],
+        ["Algal Bloom Detected", "Arabian Sea", "5h ago", "#ff8a1f"],
+        ["Unusual SST Increase", "Bay of Bengal", "6h ago", "#ff8a1f"],
+        ["Low Fish Abundance Predicted", "South China Sea", "1d ago", "#ffc107"]
+      ];
+
+      const nav = [
+        ["Dashboard", "M4 10.5 12 4l8 6.5V21h-5v-6H9v6H4z"],
+        ["Live Ocean Map", "M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11z"],
+        ["Ocean Conditions", "M4 15h16M6 11h12M8 7h8M12 3v18"],
+        ["Fisheries Insights", "M4 14c4-5 9-5 16 0-7 5-12 5-16 0zM7 14l-3 3M17 14l3 3"],
+        ["Biodiversity Explorer", "M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20zM2 12h20M12 2c3 3 3 17 0 20M12 2c-3 3-3 17 0 20"],
+        ["Predictions", "M4 17l5-5 4 4 7-9M4 21h16"],
+        ["Alerts", "M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"],
+        ["Reports", "M6 2h9l5 5v15H6zM15 2v5h5"],
+        ["RAPID-AI Assistant", "M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-4-.98L3 20l1.2-4A8.5 8.5 0 1 1 21 11.5z"],
+        ["Data Upload", "M12 3v12M7 8l5-5 5 5M5 21h14"],
+        ["Settings", "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"]
+      ];
+
+      let map;
+      let markerCluster;
+      let markers = fallbackMarkers;
+      let baseLayers = {};
+      let currentBase = "satellite";
+
+      function iconPath(path) {
+        return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${path}"></path></svg>`;
+      }
+
+      function renderNav() {
+        document.getElementById("nav").innerHTML = nav.map((item, index) => `
+          <button class="${index === 0 ? "active" : ""}" type="button">${iconPath(item[1])}<span>${item[0]}</span></button>
+        `).join("");
+      }
+
+      function renderLayers() {
+        document.getElementById("layerList").innerHTML = layerDefs.map(layer => `
+          <label class="layer">
+            <input type="checkbox" data-layer="${layer.id}" ${layer.checked ? "checked" : ""} />
+            <span>${layer.label}</span>
+            <i class="swatch" style="--accent:${layer.color}"></i>
+          </label>
+        `).join("");
+      }
+
+      function renderAlerts() {
+        document.getElementById("alerts").innerHTML = alerts.map(alert => `
+          <div class="alert">
+            <i class="dot" style="--accent:${alert[3]}"></i>
+            <div><strong>${alert[0]}</strong><small>${alert[1]}</small></div>
+            <span class="time">${alert[2]}</span>
+          </div>
+        `).join("");
+      }
+
+      async function fetchJson(path, fallback) {
+        for (const base of API_BASES) {
+          try {
+            const response = await fetch(`${base}${path}`, { cache: "no-store" });
+            if (response.ok) {
+              document.getElementById("apiState").textContent = "FastAPI connected";
+              return await response.json();
+            }
+          } catch (error) {}
+        }
+        document.getElementById("apiState").textContent = "Using local fallback data";
+        return fallback;
+      }
+
+      function renderKpis(kpis) {
+        const colors = ["#ff4444", "#28df78", "#8b5cf6", "#26d7ff", "#1683ff"];
+        const codes = ["SST", "CHL", "BIO", "HLT", "CUR"];
+        document.getElementById("kpis").innerHTML = kpis.map((kpi, index) => `
+          <article class="kpi glass" role="button" tabindex="0" style="--accent:${colors[index]}">
+            <div class="kpi-head"><div class="kpi-icon">${codes[index]}</div><div><h3>${kpi.label}</h3><p class="kpi-value">${kpi.description}</p></div></div>
+          </article>
+        `).join("");
+      }
+
+      function markerColor(type) {
+        return layerDefs.find(layer => layer.id === type)?.color || "#1683ff";
+      }
+
+      function markerLatLng(marker) {
+        return [Number(marker.lat), Number(marker.lng)];
+      }
+
+      function makeMarker(marker) {
+        const icon = L.divIcon({
+          className: "marine-marker",
+          html: `<span class="marker-dot" style="--accent:${markerColor(marker.type)}"></span>`,
+          iconSize: [18, 18],
+          iconAnchor: [9, 9],
+          popupAnchor: [0, -10]
+        });
+        const pin = L.marker(markerLatLng(marker), { icon, title: marker.name });
+        pin.bindPopup(`<strong>${marker.name}</strong><br>${marker.region}<br>${marker.layer}`);
+        pin.on("click", () => openDrawer(marker));
+        return pin;
+      }
+
+      function refreshMarkers() {
+        if (!markerCluster) return;
+        markerCluster.clearLayers();
+        const active = Array.from(document.querySelectorAll("[data-layer]:checked")).map(input => input.dataset.layer);
+        markers.filter(marker => active.includes(marker.type)).forEach(marker => markerCluster.addLayer(makeMarker(marker)));
+        document.getElementById("markerCount").textContent = `${markerCluster.getLayers().length} markers`;
+      }
+
+      function openDrawer(marker) {
+        document.getElementById("drawerTitle").textContent = marker.name;
+        document.getElementById("drawerText").textContent = marker.summary;
+        document.getElementById("drawerLayer").textContent = marker.layer;
+        document.getElementById("drawerRegion").textContent = marker.region;
+        document.getElementById("drawerConfidence").textContent = marker.metrics?.Confidence || marker.metrics?.confidence || "--";
+        document.getElementById("drawer").classList.add("open");
+      }
+
+      function renderCurrents() {
+        const lines = [[34, 48, "-10deg", "0s"], [46, 38, "17deg", ".8s"], [60, 48, "-20deg", "1.4s"], [72, 58, "9deg", "2s"], [52, 70, "-8deg", "2.8s"]];
+        document.getElementById("currents").innerHTML = lines.map(line => `<i class="current-line" style="left:${line[0]}%;top:${line[1]}%;--angle:${line[2]};animation-delay:${line[3]}"></i>`).join("");
+      }
+
+      function initMap() {
+        if (!window.L || !L.markerClusterGroup) {
+          document.getElementById("mapLoading").textContent = "Leaflet failed to load. Check internet connection.";
+          return;
+        }
+
+        const tileOptions = { maxZoom: 19, crossOrigin: true };
+        const roadsA = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}", tileOptions);
+        const labelsA = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", tileOptions);
+        const roadsB = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}", tileOptions);
+        const labelsB = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", tileOptions);
+        baseLayers = {
+          satellite: L.layerGroup([
+            L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", tileOptions),
+            roadsA,
+            labelsA
+          ]),
+          normal: L.layerGroup([
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { ...tileOptions, subdomains: "abc" }),
+            roadsB,
+            labelsB
+          ])
+        };
+
+        map = L.map("map", {
+          center: [4, 73],
+          zoom: 3,
+          minZoom: 2,
+          maxZoom: 18,
+          zoomControl: false,
+          attributionControl: false,
+          layers: [baseLayers.satellite]
+        });
+
+        markerCluster = L.markerClusterGroup({
+          showCoverageOnHover: false,
+          maxClusterRadius: 52,
+          iconCreateFunction: cluster => L.divIcon({
+            className: "marine-cluster",
+            html: `<span>${cluster.getChildCount()}</span>`,
+            iconSize: [42, 42]
+          })
+        });
+        map.addLayer(markerCluster);
+        map.on("mousemove", event => {
+          const lat = Math.abs(event.latlng.lat).toFixed(2);
+          const lng = Math.abs(event.latlng.lng).toFixed(2);
+          document.getElementById("coords").innerHTML = `Lat: ${lat} ${event.latlng.lat >= 0 ? "N" : "S"}&nbsp;&nbsp;&nbsp;Lon: ${lng} ${event.latlng.lng >= 0 ? "E" : "W"}`;
+        });
+        document.getElementById("mapLoading").style.display = "none";
+        setTimeout(() => map.invalidateSize(), 100);
+      }
+
+      function setBase(mode) {
+        if (!map) return;
+        currentBase = mode;
+        Object.values(baseLayers).forEach(layer => map.removeLayer(layer));
+        map.addLayer(baseLayers[mode]);
+        markerCluster.addTo(map);
+        document.getElementById("satelliteMode").classList.toggle("active", mode === "satellite");
+        document.getElementById("normalMode").classList.toggle("active", mode === "normal");
+      }
+
+      async function search(query) {
+        const text = query.trim().toLowerCase();
+        if (!text || !map) return;
+        const marker = markers.find(item => `${item.name} ${item.region} ${item.layer}`.toLowerCase().includes(text));
+        if (marker) {
+          map.flyTo(markerLatLng(marker), 7, { duration: 0.8 });
+          openDrawer(marker);
+          return;
+        }
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`);
+          const data = await response.json();
+          if (data.length) map.flyTo([Number(data[0].lat), Number(data[0].lon)], 7, { duration: 0.8 });
+        } catch (error) {}
+      }
+
+      function drawSpark(id, color, data) {
+        echarts.init(document.getElementById(id)).setOption({
+          grid: { left: 0, right: 0, top: 4, bottom: 0 },
+          xAxis: { type: "category", show: false, data: data.map((_, i) => i) },
+          yAxis: { type: "value", show: false },
+          series: [{ type: "line", smooth: true, symbol: "none", data, lineStyle: { color, width: 2 }, areaStyle: { color: `${color}22` } }]
+        });
+      }
+
+      function drawCharts(data) {
+        if (!window.echarts) return;
+        const axis = { axisLabel: { color: getComputedStyle(document.body).getPropertyValue("--muted") }, splitLine: { lineStyle: { color: "rgba(120,150,190,.12)" } } };
+        echarts.init(document.getElementById("fishChart")).setOption(lineChart("#1683ff", data.fish_abundance, axis));
+        echarts.init(document.getElementById("healthChart")).setOption(lineChart("#28df78", data.ocean_health, axis));
+        echarts.init(document.getElementById("bioChart")).setOption({
+          grid: { left: 92, right: 20, top: 8, bottom: 18 },
+          xAxis: { type: "value", max: 100, ...axis },
+          yAxis: { type: "category", data: Object.keys(data.biodiversity), axisLabel: { color: getComputedStyle(document.body).getPropertyValue("--text") } },
+          series: [{ type: "bar", data: Object.values(data.biodiversity), itemStyle: { color: "#1683ff", borderRadius: 5 } }]
+        });
+      }
+
+      function lineChart(color, data, axis) {
+        return {
+          grid: { left: 36, right: 12, top: 10, bottom: 22 },
+          xAxis: { type: "category", data: data.map((_, i) => i), ...axis },
+          yAxis: { type: "value", ...axis },
+          series: [{ type: "line", smooth: true, symbol: "circle", symbolSize: 5, data, lineStyle: { color, width: 2 }, itemStyle: { color }, areaStyle: { color: `${color}1f` } }]
+        };
+      }
+
+      function bind() {
+        document.getElementById("zoomIn").addEventListener("click", () => map.zoomIn());
+        document.getElementById("zoomOut").addEventListener("click", () => map.zoomOut());
+        document.getElementById("fitMap").addEventListener("click", () => map.fitBounds(L.latLngBounds(markers.map(markerLatLng)), { padding: [70, 70] }));
+        document.getElementById("refreshMarkers").addEventListener("click", async () => {
+          markers = await fetchJson("/markers", fallbackMarkers);
+          refreshMarkers();
+          document.getElementById("updatedAt").textContent = "Just now";
+        });
+        document.getElementById("satelliteMode").addEventListener("click", () => setBase("satellite"));
+        document.getElementById("normalMode").addEventListener("click", () => setBase("normal"));
+        document.getElementById("search").addEventListener("keydown", event => {
+          if (event.key === "Enter") search(event.currentTarget.value);
+        });
+        document.getElementById("closeDrawer").addEventListener("click", () => document.getElementById("drawer").classList.remove("open"));
+        document.querySelectorAll("[data-layer]").forEach(input => {
+          input.addEventListener("change", event => {
+            if (event.currentTarget.dataset.layer === "sst") document.getElementById("thermal").style.display = event.currentTarget.checked ? "block" : "none";
+            if (event.currentTarget.dataset.layer === "currents") document.getElementById("currents").style.display = event.currentTarget.checked ? "block" : "none";
+            refreshMarkers();
+          });
+        });
+        document.getElementById("sunMode").addEventListener("click", () => setTheme("light"));
+        document.getElementById("moonMode").addEventListener("click", () => setTheme("dark"));
+        document.getElementById("openMarineChat").addEventListener("click", () => document.getElementById("marineChat").hidden = false);
+        document.getElementById("closeMarineChat").addEventListener("click", () => document.getElementById("marineChat").hidden = true);
+        document.getElementById("marineChatForm").addEventListener("submit", event => {
+          event.preventDefault();
+          const input = document.getElementById("marineChatInput");
+          addMarineChatMessage("user", input.value);
+          addMarineChatMessage("assistant", answerMarineQuestion(input.value));
+          input.value = "";
+        });
+        document.querySelectorAll(".quick button").forEach(button => button.addEventListener("click", () => search(button.textContent)));
+        document.getElementById("chatForm")?.addEventListener("submit", event => {
+          event.preventDefault();
+          const input = document.getElementById("chatInput");
+          document.getElementById("assistantMessage").innerHTML = `<strong>Analysis queued.</strong><br />${input.value || "Select a region or marker to generate a marine brief."}`;
+          input.value = "";
+        });
+      }
+
+      function addMarineChatMessage(role, text) {
+        if (!text.trim()) return;
+        const messages = document.getElementById("marineChatMessages");
+        const item = document.createElement("article");
+        const copy = document.createElement("p");
+        item.className = `marine-chat-message ${role}`;
+        copy.textContent = text;
+        item.appendChild(copy);
+        messages.appendChild(item);
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      function answerMarineQuestion(question) {
+        const query = question.toLowerCase();
+        if (query.includes("chlorophyll") || query.includes("phytoplankton") || query.includes("algal")) return "Chlorophyll-a is a useful signal for phytoplankton biomass. Higher values often mean more primary productivity, but unusual spikes may indicate bloom risk or water-quality stress.";
+        if (query.includes("coral") || query.includes("reef") || query.includes("bleach")) return "Coral reefs are sensitive to sustained warm water. Heat stress can cause bleaching and reduce habitat quality for reef species.";
+        if (query.includes("biodiversity") || query.includes("species") || query.includes("index")) return "A marine biodiversity index summarizes species variety and relative abundance in a selected area. Higher values usually suggest stronger ecosystem resilience.";
+        if (query.includes("temperature") || query.includes("sst") || query.includes("warm")) return "Sea surface temperature affects oxygen, plankton growth, migration, spawning, coral stress, and fish distribution.";
+        if (query.includes("health") || query.includes("ohi") || query.includes("score")) return "An ocean health score combines water quality, biodiversity, habitat condition, fisheries pressure, and climate stress into one area-level signal.";
+        return "For marine-life questions, I would compare temperature, chlorophyll, biodiversity, habitat type, and recent stress signals for the selected ocean area.";
+      }
+
+      function setTheme(theme) {
+        document.body.dataset.theme = theme;
+        document.getElementById("sunMode").classList.toggle("active", theme === "light");
+        document.getElementById("moonMode").classList.toggle("active", theme === "dark");
+        if (currentBase === "normal") setBase("normal");
+      }
+
+      async function boot() {
+        renderNav();
+        renderLayers();
+        renderAlerts();
+        renderCurrents();
+        initMap();
+        bind();
+        const [kpis, analytics, apiMarkers] = await Promise.all([
+          fetchJson("/overview", fallbackKpis),
+          fetchJson("/analytics", fallbackAnalytics),
+          fetchJson("/markers", fallbackMarkers)
+        ]);
+        markers = apiMarkers;
+        renderKpis(kpis);
+        drawCharts(analytics);
+        refreshMarkers();
+      }
+
+      boot();
+    </script>
+  </body>
+</html>
